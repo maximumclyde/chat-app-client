@@ -1,0 +1,39 @@
+@use "../../../index" as var;
+
+@mixin darkTheme-Colors {
+  background-color: var.$blue;
+  color: var.$white;
+}
+
+@mixin lightTheme-Colors {
+  background-color: var.$white;
+  color: #0f0f0f;
+}
+
+.info-modal-dark {
+  .ant-modal-header {
+    .ant-modal-title {
+      @include darkTheme-Colors();
+    }
+  }
+  .ant-modal-content {
+    @include darkTheme-Colors();
+  }
+  .ant-modal-footer {
+    @include darkTheme-Colors();
+  }
+}
+
+.info-modal-light {
+  .ant-modal-header {
+    .ant-modal-title {
+      @include lightTheme-Colors();
+    }
+  }
+  .ant-modal-content {
+    @include lightTheme-Colors();
+  }
+  .ant-modal-footer {
+    @include lightTheme-Colors();
+  }
+}

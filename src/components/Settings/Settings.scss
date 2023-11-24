@@ -1,0 +1,47 @@
+@use "../../index" as var;
+
+.settings-main {
+  width: 100%;
+}
+
+.settings-mobile {
+  height: 100vh;
+}
+
+.settings-contained {
+  height: fit-content;
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.settings-fields-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  row-gap: 1rem;
+
+  .formField-input-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .ant-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .ant-col {
+        width: fit-content;
+        flex: unset;
+      }
+
+      .ant-form-item-control-input-content {
+        width: fit-content;
+        flex: unset;
+      }
+    }
+  }
+}
