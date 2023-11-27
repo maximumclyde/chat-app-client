@@ -1,25 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState<boolean>(
     window.matchMedia(query).matches
   );
 
-  useEffect(() => {
-    const matchMedia = window.matchMedia(query);
-
-    function changeListener(event: MediaQueryListEvent) {
+  const changeListener = useCallback(
+    (event: MediaQueryListEvent) => {
       if (event.matches !== matches) {
         setMatches(event.matches);
       }
-    }
+    },
+    [matches]
+  );
 
+  useEffect(() => {
+    const matchMedia = window.matchMedia(query);
+
+    matchMedia.removeEventListener("change", changeListener);
     matchMedia.addEventListener("change", changeListener);
 
     return () => {
       matchMedia.removeEventListener("change", changeListener);
     };
-  }, [matches, query]);
+  }, [changeListener, query]);
 
   return matches;
 }

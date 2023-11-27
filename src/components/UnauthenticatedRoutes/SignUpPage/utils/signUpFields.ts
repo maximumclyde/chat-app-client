@@ -15,14 +15,8 @@ function signUpFields(params: SignUpFieldsParams): FormFieldsPropsType[] {
 
   return [
     {
-      label: "Full Name",
-      formName: "fullName",
-      style: { width: 300 },
-      required: true,
-    },
-    {
       label: "User Name",
-      formName: "userAlias",
+      formName: "userName",
       style: { width: 300 },
       required: true,
       rules: [
@@ -39,7 +33,7 @@ function signUpFields(params: SignUpFieldsParams): FormFieldsPropsType[] {
     },
     {
       label: "Email",
-      formName: "email",
+      formName: "userEmail",
       style: { width: 300 },
       required: true,
       rules: [
@@ -58,7 +52,7 @@ function signUpFields(params: SignUpFieldsParams): FormFieldsPropsType[] {
     {
       label: "Password",
       type: "password",
-      formName: "password",
+      formName: "userPassword",
       style: { width: 300 },
       required: true,
       rules: [
@@ -81,7 +75,7 @@ function signUpFields(params: SignUpFieldsParams): FormFieldsPropsType[] {
       rules: [
         {
           async validator(_: any, value: string) {
-            const pass = form.getFieldValue("password");
+            const pass = form.getFieldValue("userPassword");
             if (!value) {
               return Promise.resolve("");
             }
