@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
-import { GlobalPropsType, GlobalStoreType } from "@types";
+import { GlobalStoreType } from "@types";
 import socket from "@socket";
 import MessageType from "./MessageType/MessageType";
 
 import "./ChatPage.scss";
 
-function ChatPage(props: GlobalPropsType) {
+function ChatPage() {
   const authenticatedUser = useSelector(
     (state: GlobalStoreType) => state.authenticatedUser
   );

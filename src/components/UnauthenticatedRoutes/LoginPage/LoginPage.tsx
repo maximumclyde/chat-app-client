@@ -3,11 +3,12 @@ import { FormFields } from "@ui-components";
 import { loginFields } from "./utils";
 import axios from "axios";
 
-import { UserType } from "@types";
+import { UserType, PreferenceStateType } from "@types";
 
 type LoginType = {
   user: UserType;
   token: string;
+  userPreferences: PreferenceStateType;
 };
 
 function LoginPage() {
@@ -24,18 +25,18 @@ function LoginPage() {
         password: form.getFieldValue("password"),
       })
       .then(async (res) => {
-        await message
-          .success({
-            content: "Login Successful",
-            key: "userLogging",
-            duration: 2,
-          })
-          .then(() => {
-            localStorage.setItem("authenticationToken", res.data.token);
-            window.location.replace(
-              `${window.location.protocol}//${window.location.host}/`
-            );
-          });
+        localStorage.setItem("authenticationToken", res.data.token);
+
+        return await message.success({
+          content: "Login Successful",
+          key: "userLogging",
+          duration: 2,
+        });
+      })
+      .then(() => {
+        window.location.replace(
+          `${window.location.protocol}//${window.location.host}/`
+        );
       })
       .catch((err) => {
         void message.error({

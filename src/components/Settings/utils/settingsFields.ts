@@ -9,7 +9,7 @@ function settingsFields(params: SettingFieldProps): FormFieldsPropsType[] {
   return [
     {
       label: "Color Theme",
-      formName: "colorTheme",
+      formName: "theme",
       type: "radio",
       onChange: onThemeChange,
       options: [

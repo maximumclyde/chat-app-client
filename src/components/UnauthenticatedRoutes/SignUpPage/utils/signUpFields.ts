@@ -7,6 +7,9 @@ type SignUpFieldsParams = {
   responseErrors: ResponseErrors;
 };
 
+const PASSWORD_RG =
+  /^(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=\D*\d)([^_+!\-@#]*[_+!\-@#]).*$/;
+
 function signUpFields(params: SignUpFieldsParams): FormFieldsPropsType[] {
   const {
     form,
@@ -57,8 +60,7 @@ function signUpFields(params: SignUpFieldsParams): FormFieldsPropsType[] {
       required: true,
       rules: [
         {
-          pattern:
-            /^(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=\D*\d)([^_+!\-@#]*[_+!\-@#]).*$/,
+          pattern: PASSWORD_RG,
           message:
             "*Password must contain a capital, lower case characters, a digit and a special character",
         },

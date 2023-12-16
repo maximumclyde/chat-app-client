@@ -1,21 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type PreferenceStateType = {
-  [preference: string]: any;
+  userId: string;
+  preferences: any;
 };
 
 const preferences = createSlice({
   name: "preferences",
   initialState: {
-    colorTheme: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light",
+    userId: "",
+    preferences: {},
   },
   reducers: {
-    changePreference(state, action: PayloadAction<PreferenceStateType>) {
+    preferencesSetup(_, action: PayloadAction<PreferenceStateType>) {
+      return action.payload;
+    },
+    changePreferences(state, action: PayloadAction<any>) {
       return {
         ...state,
-        ...action.payload,
+        preferences: {
+          ...state.preferences,
+          ...action.payload,
+        },
       };
     },
   },

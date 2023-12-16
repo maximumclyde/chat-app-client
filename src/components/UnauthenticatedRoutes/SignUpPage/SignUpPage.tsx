@@ -4,10 +4,12 @@ import { FormFields } from "@ui-components";
 import axios from "axios";
 import { signUpFields } from "./utils";
 
-import { UserType } from "@types";
+import { UserType, PreferenceStateType } from "@types";
+
 type SignUpType = {
   user: UserType;
   token: string;
+  userPreferences: PreferenceStateType;
 };
 
 export type ResponseErrors = {
@@ -36,42 +38,42 @@ function SignUpPage() {
         ...fields,
       })
       .then(async (res) => {
-        await message
-          .success({
-            content: "Sign Up Successful!",
-            key: "userSignUp",
-            duration: 2,
-          })
-          .then(() => {
-            window.localStorage.setItem("authenticationToken", res.data.token);
-            window.location.replace(
-              `${window.location.protocol}//${window.location.host}/`
-            );
-          });
+        window.localStorage.setItem("authenticationToken", res.data.token);
+
+        return await message.success({
+          content: "Sign Up Successful!",
+          key: "userSignUp",
+          duration: 2,
+        });
+      })
+      .then(() => {
+        window.location.replace(
+          `${window.location.protocol}//${window.location.host}/`
+        );
       })
       .catch((err: any) => {
         console.log("Error creating user: ", err);
         const errorFields = { email: [""], userAlias: [""] };
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        if (err?.response?.data?.keyPattern?.email) {
+        if (err?.response?.data?.keyPattern?.userEmail) {
           void message.warning({
             content: "Email already in use!",
             key: "userSignUp",
           });
           errorFields.email = [
             ...responseErrors.email,
-            form.getFieldValue("email"),
+            form.getFieldValue("userEmail"),
           ];
           errorFields.userAlias = [...responseErrors.userAlias];
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        } else if (err?.response?.data?.keyPattern?.userAlias) {
+        } else if (err?.response?.data?.keyPattern?.userName) {
           void message.warning({
             content: "User name is already in use!",
             key: "userSignUp",
           });
           errorFields.userAlias = [
             ...responseErrors.userAlias,
-            form.getFieldValue("userAlias"),
+            form.getFieldValue("userName"),
           ];
           errorFields.email = [...responseErrors.email];
         } else {

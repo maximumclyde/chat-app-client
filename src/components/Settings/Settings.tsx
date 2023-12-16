@@ -1,16 +1,18 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Form, RadioChangeEvent } from "antd";
 import { useMediaQuery } from "@hooks";
+
 import { preferenceActions } from "../../store/preferences";
 import { settingsFields } from "./utils";
 import { FormFields } from "@ui-components";
+import { GlobalStoreType } from "@types";
 
 import "./Settings.scss";
 
-import { GlobalPropsType } from "@types";
-
-function Settings(props: GlobalPropsType) {
-  const { preferences } = props;
+function Settings() {
+  const { preferences } = useSelector(
+    (state: GlobalStoreType) => state.preferences
+  );
   const dispatch = useDispatch();
   const [form] = Form.useForm();
 
@@ -18,7 +20,7 @@ function Settings(props: GlobalPropsType) {
 
   function onThemeChange(e: RadioChangeEvent) {
     const val = e.target.value;
-    dispatch(preferenceActions.changePreference({ colorTheme: val }));
+    dispatch(preferenceActions.changePreferences({ theme: val }));
   }
 
   return (
