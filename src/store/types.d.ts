@@ -1,9 +1,4 @@
-import { PreferenceStateType } from "./preferences";
-import { UserType } from "./authenticatedUser";
-import { GlobalStoreType } from ".";
-import { MessageType } from "./userMessages";
-
-export type { GlobalStoreType };
-export type { PreferenceStateType };
-export type { UserType };
-export type { MessageType };
+export type { GlobalStoreType } from ".";
+export type { PreferenceStateType } from "./preferences";
+export type { UserType } from "./authenticatedUser";
+export type { MessageType } from "./userMessages";
