@@ -30,8 +30,7 @@
       "@ui-components": ["./src/components/UIComponents"],
       "@assets": ["./src/assets"],
       "@utils": ["./src/utils"],
-      "@hooks": ["./src/hooks"],
-      "@socket": ["./src/Socket"]
+      "@hooks": ["./src/hooks"]
     }
   },
   "include": ["src", ".eslintrc.cjs"],
