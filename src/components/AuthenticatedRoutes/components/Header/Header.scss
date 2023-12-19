@@ -1,0 +1,19 @@
+@import "/src/index.scss";
+
+.authenticated-layout-header {
+  height: 56px;
+  width: calc(100dvw - 4rem);
+  padding: 0 2rem;
+  border-bottom: 1px solid $light-border;
+  @include light-header-style;
+  @include flex-space;
+
+  .header-section {
+    @include flex-sc;
+  }
+}
+
+.authenticated-layout-header.header-dark {
+  @include dark-header-style;
+  border-bottom: 1px solid $dark-border;
+}

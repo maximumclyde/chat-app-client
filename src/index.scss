@@ -1,10 +1,3 @@
-$blue: #00152a;
-$lavender: #c5d1eb;
-$powderBlue: #92afd7;
-$grey: #5a7684;
-$red: #ed254e;
-$white: #f8f8f8;
-
 body {
   margin: 0;
   padding: 0;
@@ -17,4 +10,76 @@ body {
   padding: 0;
   height: 100vh;
   width: 100%;
+}
+
+$blue: #00152a;
+$lavender: #c5d1eb;
+$powderBlue: #92afd7;
+$grey: #5a7684;
+$red: #ed254e;
+$white: #f9f9f9;
+
+$light-background: #f9f9f9;
+$light-header-background: #fafaf9;
+$light-border: rgba(0, 0, 0, 0.1);
+$light-color: #0f0f0f;
+
+$dark-background: #010c0c;
+$dark-header-background: #191a19;
+$dark-border: rgba(255, 255, 255, 0.1);
+$dark-color: #f9f9f9;
+
+@mixin light-body-style() {
+  background-color: $light-background;
+  color: $light-color;
+}
+
+@mixin light-header-style {
+  background-color: $light-header-background;
+  color: $light-color;
+}
+
+@mixin dark-body-style {
+  background-color: $dark-background;
+  color: $dark-color;
+}
+
+@mixin dark-header-style {
+  background-color: $dark-header-background;
+  color: $dark-color;
+}
+
+@mixin flex-ss($direction: row) {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: $direction;
+}
+
+@mixin flex-cc($direction: row) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $direction;
+}
+
+@mixin flex-sc($direction: row) {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: $direction;
+}
+
+@mixin flex-space($direction: row, $align: center) {
+  display: flex;
+  justify-content: space-between;
+  align-items: $align;
+  flex-direction: $direction;
+}
+
+@mixin flex($content: flex-start, $items: flex-start, $direction: row) {
+  display: flex;
+  justify-content: $content;
+  align-items: $items;
+  flex-direction: $direction;
 }

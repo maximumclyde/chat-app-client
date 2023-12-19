@@ -1,23 +1,20 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import AuthenticatedLayout from "./AuthenticatedLayout";
-import Settings from "../Settings/Settings";
 import { Loading } from "@ui-components";
 
-const ChatPage = lazy(() => import("./ChatPage/ChatPage"));
+const AuthenticatedLayout = lazy(
+  () => import("./components/AuthenticatedLayout/AuthenticatedLayout")
+);
 
 function AuthenticatedRoutes() {
   return (
-    <AuthenticatedLayout>
-      <Suspense fallback={<Loading loading={true} />}>
-        <Routes>
-          <Route path="/" element={<ChatPage />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </Suspense>
-    </AuthenticatedLayout>
+    <Suspense fallback={<Loading loading={true} />}>
+      <Routes>
+        <Route path="/" element={<AuthenticatedLayout />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Suspense>
   );
 }
 

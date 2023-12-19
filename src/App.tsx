@@ -1,12 +1,10 @@
 import { useState, useEffect, lazy } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { ConfigProvider, theme } from "antd";
+import { useDispatch } from "react-redux";
 
 import { getAuthenticatedUser } from "@utils";
 import { authenticatedUserActions } from "./store/authenticatedUser";
 import { preferenceActions } from "./store/preferences";
 import { Loading } from "@ui-components";
-import { GlobalStoreType } from "@types";
 
 const AuthenticatedRoutes = lazy(
   () => import("./components/AuthenticatedRoutes/AuthenticatedRoutes")
@@ -22,10 +20,6 @@ const providers = {
 };
 
 function App() {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences || {}
-  );
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -51,16 +45,7 @@ function App() {
 
   return (
     <Loading loading={loading}>
-      <ConfigProvider
-        theme={{
-          algorithm:
-            preferences?.theme === "light"
-              ? theme.defaultAlgorithm
-              : theme.darkAlgorithm,
-        }}
-      >
-        <RouteProvider />
-      </ConfigProvider>
+      <RouteProvider />
     </Loading>
   );
 }

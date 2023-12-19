@@ -1,12 +1,14 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import UnauthenticatedLayout from "./UnauthenticatedLayout";
 
 import { Loading } from "@ui-components";
 
-const HomePage = lazy(() => import("./HomePage/HomePage"));
-const SignUpPage = lazy(() => import("./SignUpPage/SignUpPage"));
-const LoginPage = lazy(() => import("./LoginPage/LoginPage"));
+const HomePage = lazy(() => import("./components/HomePage/HomePage"));
+const SignUpPage = lazy(() => import("./components/SignUpPage/SignUpPage"));
+const LoginPage = lazy(() => import("./components/LoginPage/LoginPage"));
+const UnauthenticatedLayout = lazy(
+  () => import("./components/UnauthenticatedLayout/UnauthenticatedLayout")
+);
 
 function UnauthenticatedRoutes() {
   return (
