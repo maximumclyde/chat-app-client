@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Form, RadioChangeEvent } from "antd";
 import { useMediaQuery } from "@hooks";
 
-import { preferenceActions } from "../../store/preferences";
+import { preferenceActions } from "@store-actions";
 import { settingsFields } from "./utils";
 import { FormFields } from "@ui-components";
 import { GlobalStoreType } from "@types";

@@ -1,10 +1,12 @@
 import axios from "axios";
 
-import { UserType, PreferenceStateType } from "@types";
+import { UserType, PreferenceStateType, FriendType, GroupType } from "@types";
 
 type ProfileResponse = {
   user: UserType;
   userPreferences: PreferenceStateType;
+  friends: FriendType[];
+  userGroups: GroupType[];
 };
 
 async function getAuthenticatedUser(): Promise<ProfileResponse> {

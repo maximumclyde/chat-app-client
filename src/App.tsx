@@ -2,8 +2,12 @@ import { useState, useEffect, lazy } from "react";
 import { useDispatch } from "react-redux";
 
 import { getAuthenticatedUser } from "@utils";
-import { authenticatedUserActions } from "./store/authenticatedUser";
-import { preferenceActions } from "./store/preferences";
+import {
+  preferenceActions,
+  authenticatedUserActions,
+  friendListActions,
+  groupListActions,
+} from "@store-actions";
 import { Loading } from "@ui-components";
 
 const AuthenticatedRoutes = lazy(
@@ -28,9 +32,11 @@ function App() {
   useEffect(() => {
     getAuthenticatedUser()
       .then((res) => {
-        const { user, userPreferences } = res;
+        const { user, userPreferences, friends, userGroups } = res;
         dispatch(authenticatedUserActions.setAuthenticatedUser(user));
         dispatch(preferenceActions.preferencesSetup(userPreferences));
+        dispatch(friendListActions.addFriends(friends));
+        dispatch(groupListActions.setupGroups(userGroups));
         setIsAuthenticated(true);
         setLoading(false);
       })

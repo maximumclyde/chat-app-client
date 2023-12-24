@@ -1,10 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type UserType = {
-  userId: string;
-  fullName: string;
-  userAlias: string;
-  email: string;
+  _id: string;
+  userName: string;
+  userEmail: string;
+  friendList: string[];
+  friendRequests: string[];
+  requestsMade: string[];
+  groupList: string[];
+  userBlock: string[];
+  groupBlock: string[];
+  blockedBy: string[];
+  createdAt: number;
 };
 
 const initUser = {} as UserType;

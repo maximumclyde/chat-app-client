@@ -1,26 +1,31 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { UserType } from "@types";
+export type FriendType = {
+  _id: string;
+  userName: string;
+  userEmail: string;
+  friendList: string[];
+};
 
-const initialListState = [] as UserType[];
+const initialListState = [] as FriendType[];
 
 const friendList = createSlice({
   name: "friendList",
   initialState: initialListState,
   reducers: {
-    addFriend(state, action: PayloadAction<UserType>) {
+    addFriend(state, action: PayloadAction<FriendType>) {
       state.push(action.payload);
       return state;
     },
-    addFriends(state, action: PayloadAction<UserType[]>) {
+    addFriends(state, action: PayloadAction<FriendType[]>) {
       for (let i = 0; i < action.payload.length; i++) {
         state.push(action.payload[i]);
       }
       return state;
     },
-    removeFriend(state, action: PayloadAction<UserType>) {
+    removeFriend(state, action: PayloadAction<FriendType>) {
       const userIndex = state.findIndex(
-        (el) => el?.userId === action.payload?.userId
+        (el) => el?._id === action.payload?._id
       );
       if (userIndex > -1) {
         state.splice(userIndex, 1);

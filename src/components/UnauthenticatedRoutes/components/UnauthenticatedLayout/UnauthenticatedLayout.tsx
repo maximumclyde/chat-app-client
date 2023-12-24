@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Layout, Menu } from "antd";
 import { getUnauthenticatedItems } from "./getUnauthenticatedItems";
 
-import "../AuthenticatedRoutes/AuthenticatedLayout.scss";
+import "../../../AuthenticatedRoutes/components/AuthenticatedLayout/AuthenticatedLayout.scss";
 
 type UnauthenticatedLayoutProps = {
   children: ReactNode;
