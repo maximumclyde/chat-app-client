@@ -1,17 +1,19 @@
 import { FormFieldsPropsType } from "@types";
 
 type SettingFieldProps = {
-  onThemeChange: (e: any) => any;
+  onPreferenceChange: (key: string, value: any) => any;
 };
 
 function settingsFields(params: SettingFieldProps): FormFieldsPropsType[] {
-  const { onThemeChange } = params;
+  const { onPreferenceChange } = params;
   return [
     {
       label: "Color Theme",
       formName: "theme",
       type: "radio",
-      onChange: onThemeChange,
+      onChange(e) {
+        onPreferenceChange("theme", e.target.value);
+      },
       options: [
         { label: "Light", value: "light" },
         { label: "Dark", value: "dark" },

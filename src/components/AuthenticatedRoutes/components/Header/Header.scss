@@ -10,10 +10,37 @@
 
   .header-section {
     @include flex-sc;
+    gap: 1rem;
+
+    .ant-input-affix-wrapper {
+      transition: unset;
+      input {
+        transition: unset;
+        &::placeholder {
+          transition: unset;
+        }
+      }
+    }
   }
 }
 
 .authenticated-layout-header.header-dark {
   @include dark-header-style;
   border-bottom: 1px solid $dark-border;
+
+  .header-section {
+    color: $white;
+    .ant-input-affix-wrapper {
+      background-color: $blue;
+      color: $white;
+
+      input {
+        background-color: inherit;
+        color: inherit;
+        &::placeholder {
+          color: #f9f9f9aa;
+        }
+      }
+    }
+  }
 }

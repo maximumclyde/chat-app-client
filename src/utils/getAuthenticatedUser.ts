@@ -10,7 +10,7 @@ type ProfileResponse = {
 };
 
 async function getAuthenticatedUser(): Promise<ProfileResponse> {
-  const token = window.localStorage.getItem("authenticationToken");
+  const token = localStorage.getItem("authenticationToken");
   if (!token) {
     return Promise.reject("No authentication token");
   }

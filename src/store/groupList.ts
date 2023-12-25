@@ -4,7 +4,7 @@ export type GroupType = {
   groupName: string;
   groupMembers: string[];
   groupAdmins: string[];
-  createdAt: number;
+  createdAt: string;
   createdBy: {
     name: string;
     id: string;

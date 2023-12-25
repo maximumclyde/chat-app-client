@@ -34,9 +34,7 @@ function LoginPage() {
         });
       })
       .then(() => {
-        window.location.replace(
-          `${window.location.protocol}//${window.location.host}/`
-        );
+        location.replace(`${location.protocol}//${location.host}/`);
       })
       .catch((err) => {
         void message.error({

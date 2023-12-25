@@ -11,7 +11,7 @@ export type UserType = {
   userBlock: string[];
   groupBlock: string[];
   blockedBy: string[];
-  createdAt: number;
+  createdAt: string;
 };
 
 const initUser = {} as UserType;
@@ -24,7 +24,7 @@ const authenticatedUser = createSlice({
       return action.payload;
     },
     userLogout() {
-      window.localStorage.removeItem("authenticationToken");
+      localStorage.removeItem("authenticationToken");
       return {} as UserType;
     },
   },

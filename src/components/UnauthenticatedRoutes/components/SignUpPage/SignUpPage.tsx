@@ -38,7 +38,7 @@ function SignUpPage() {
         ...fields,
       })
       .then(async (res) => {
-        window.localStorage.setItem("authenticationToken", res.data.token);
+        localStorage.setItem("authenticationToken", res.data.token);
 
         return await message.success({
           content: "Sign Up Successful!",
@@ -47,9 +47,7 @@ function SignUpPage() {
         });
       })
       .then(() => {
-        window.location.replace(
-          `${window.location.protocol}//${window.location.host}/`
-        );
+        location.replace(`${location.protocol}//${location.host}/`);
       })
       .catch((err: any) => {
         console.log("Error creating user: ", err);
