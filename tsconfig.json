@@ -22,6 +22,7 @@
 
     /* Alias Paths */
     "paths": {
+      "~": ["./src"],
       "@types": ["./src/types"],
       "@redux-types": ["./src/store/types"],
       "@authenticated-routes": ["./src/components/AuthenticatedRoutes"],
@@ -30,7 +31,7 @@
       "@assets": ["./src/assets"],
       "@utils": ["./src/utils"],
       "@hooks": ["./src/hooks"],
-      "@socket": ["./src/Socket"]
+      "@store-actions": ["./src/store/storeActions"]
     }
   },
   "include": ["src", ".eslintrc.cjs"],

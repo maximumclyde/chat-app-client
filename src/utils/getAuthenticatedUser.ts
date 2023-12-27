@@ -1,15 +1,22 @@
 import axios from "axios";
 
-import { UserType } from "@types";
+import { UserType, PreferenceStateType, FriendType, GroupType } from "@types";
 
-async function getAuthenticatedUser(): Promise<UserType> {
-  const token = window.localStorage.getItem("authenticationToken");
+type ProfileResponse = {
+  user: UserType;
+  userPreferences: PreferenceStateType;
+  friends: FriendType[];
+  userGroups: GroupType[];
+};
+
+async function getAuthenticatedUser(): Promise<ProfileResponse> {
+  const token = localStorage.getItem("authenticationToken");
   if (!token) {
     return Promise.reject("No authentication token");
   }
 
   try {
-    const user = await axios.get<UserType>("/users/profile");
+    const user = await axios.get<ProfileResponse>("/users/profile");
     return user.data;
   } catch (err) {
     return Promise.reject(err);

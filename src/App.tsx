@@ -1,19 +1,30 @@
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { ConfigProvider, theme } from "antd";
+import { useState, useEffect, lazy } from "react";
+import { useDispatch } from "react-redux";
 
 import { getAuthenticatedUser } from "@utils";
-import { authenticatedUserActions } from "./store/authenticatedUser";
+import {
+  preferenceActions,
+  authenticatedUserActions,
+  friendListActions,
+  groupListActions,
+} from "@store-actions";
+import { toArrayBuffer } from "@utils";
 import { Loading } from "@ui-components";
-import RoutesConfig from "./Routes";
 
-import { GlobalStoreType } from "@types";
+const AuthenticatedRoutes = lazy(
+  () => import("./components/AuthenticatedRoutes/AuthenticatedRoutes")
+);
+
+const UnauthenticatedRoutes = lazy(
+  () => import("./components/UnauthenticatedRoutes/UnauthenticatedRoutes")
+);
+
+const providers = {
+  auth: AuthenticatedRoutes,
+  noAuth: UnauthenticatedRoutes,
+};
 
 function App() {
-  const preferences = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -21,35 +32,33 @@ function App() {
 
   useEffect(() => {
     getAuthenticatedUser()
-      .then((user) => {
+      .then((res) => {
+        const { user, userPreferences, friends, userGroups } = res;
+        let avatar = undefined;
+        if (user?.avatar) {
+          avatar = window.URL.createObjectURL(toArrayBuffer(user?.avatar));
+        }
+        dispatch(
+          authenticatedUserActions.setAuthenticatedUser({ ...user, avatar })
+        );
+        dispatch(preferenceActions.preferencesSetup(userPreferences));
+        dispatch(friendListActions.addFriends(friends));
+        dispatch(groupListActions.setupGroups(userGroups));
         setIsAuthenticated(true);
-        dispatch(authenticatedUserActions.setAuthenticatedUser(user));
         setLoading(false);
       })
       .catch((err) => {
+        console.log("Error getting user: ", err?.message || err);
         setIsAuthenticated(false);
         setLoading(false);
-        console.log("Error getting user: ", err?.message || err);
       });
   }, [dispatch]);
 
+  const RouteProvider = providers[isAuthenticated ? "auth" : "noAuth"];
+
   return (
     <Loading loading={loading}>
-      <ConfigProvider
-        theme={{
-          algorithm:
-            preferences.colorTheme === "light"
-              ? theme.defaultAlgorithm
-              : theme.darkAlgorithm,
-        }}
-      >
-        <RoutesConfig
-          {...{
-            isAuthenticated,
-            preferences,
-          }}
-        />
-      </ConfigProvider>
+      <RouteProvider />
     </Loading>
   );
 }

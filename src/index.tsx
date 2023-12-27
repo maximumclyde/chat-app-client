@@ -12,7 +12,7 @@ import "./index.scss";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 axios.defaults.headers.common["Authorization"] = `Bearer ${
-  window.localStorage.getItem("authenticationToken") || ""
+  localStorage.getItem("authenticationToken") || ""
 }`;
 
 if (import.meta.env.MODE === "production") {

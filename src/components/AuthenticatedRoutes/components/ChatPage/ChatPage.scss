@@ -1,0 +1,15 @@
+@import "/src/index.scss";
+
+.main-chat-page-container {
+  @include flex-ss(column);
+  @include light-body-style;
+
+  height: calc(100dvh - 56px);
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.main-chat-page-container.chat-page-dark {
+  @include dark-body-style;
+}

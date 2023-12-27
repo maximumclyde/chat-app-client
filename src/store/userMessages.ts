@@ -3,8 +3,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type MessageType = {
   content: string;
   createdAt: string;
-  userId: string;
+  senderName: string;
+  senderId: string;
   receiverId: string;
+  groupId: string;
+  _id: string;
 };
 const initialMessageArray = [] as MessageType[];
 

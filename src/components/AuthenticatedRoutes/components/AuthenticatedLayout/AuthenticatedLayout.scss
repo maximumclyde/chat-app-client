@@ -1,0 +1,13 @@
+@import "/src/index.scss";
+
+.authenticated-layout-container {
+  height: 100dvh;
+  width: 100dvw;
+  @include flex-ss(column);
+
+  .authenticated-layout-body {
+    height: calc(100dvh - 56px);
+    width: 100dvw;
+    @include flex-ss;
+  }
+}

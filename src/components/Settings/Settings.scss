@@ -1,47 +1,88 @@
-@use "../../index" as var;
+@import "/src/index.scss";
 
-.settings-main {
+.settings-container {
   width: 100%;
-}
-
-.settings-mobile {
-  height: 100vh;
-}
-
-.settings-contained {
   height: fit-content;
   max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
-}
+  border-radius: 10px;
 
-.settings-fields-container {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  row-gap: 1rem;
+  .ant-modal-content {
+    padding: 0;
+    border-radius: 10px;
 
-  .formField-input-container {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    .ant-row {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .ant-modal-header {
+      @include flex-space();
+      padding: 0 1rem;
+      height: 45px;
+    }
 
-      .ant-col {
-        width: fit-content;
-        flex: unset;
-      }
+    .ant-modal-body {
+      padding: 10px 20px;
+      .settings-fields-container {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        row-gap: 1rem;
 
-      .ant-form-item-control-input-content {
-        width: fit-content;
-        flex: unset;
+        .formField-input-container {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          .ant-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .ant-col {
+              width: fit-content;
+              flex: unset;
+            }
+
+            .ant-form-item-control-input-content {
+              width: fit-content;
+              flex: unset;
+            }
+          }
+        }
       }
     }
+
+    .ant-modal-footer {
+      @include flex(flex-end, center);
+      padding: 10px;
+    }
+  }
+}
+
+.settings-container.settings-dark {
+  box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.3);
+  .ant-modal-content {
+    @include dark-body-style;
+    .ant-modal-header {
+      @include dark-body-style;
+      .ant-modal-title {
+        color: inherit;
+      }
+    }
+
+    .ant-modal-body {
+      color: $white;
+      .ant-col {
+        label {
+          color: $white;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .settings-container {
+    height: 98vh;
   }
 }
