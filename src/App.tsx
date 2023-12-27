@@ -8,6 +8,7 @@ import {
   friendListActions,
   groupListActions,
 } from "@store-actions";
+import { toArrayBuffer } from "@utils";
 import { Loading } from "@ui-components";
 
 const AuthenticatedRoutes = lazy(
@@ -33,7 +34,13 @@ function App() {
     getAuthenticatedUser()
       .then((res) => {
         const { user, userPreferences, friends, userGroups } = res;
-        dispatch(authenticatedUserActions.setAuthenticatedUser(user));
+        let avatar = undefined;
+        if (user?.avatar) {
+          avatar = window.URL.createObjectURL(toArrayBuffer(user?.avatar));
+        }
+        dispatch(
+          authenticatedUserActions.setAuthenticatedUser({ ...user, avatar })
+        );
         dispatch(preferenceActions.preferencesSetup(userPreferences));
         dispatch(friendListActions.addFriends(friends));
         dispatch(groupListActions.setupGroups(userGroups));

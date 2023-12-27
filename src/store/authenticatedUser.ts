@@ -12,6 +12,7 @@ export type UserType = {
   groupBlock: string[];
   blockedBy: string[];
   createdAt: string;
+  avatar?: string;
 };
 
 const initUser = {} as UserType;

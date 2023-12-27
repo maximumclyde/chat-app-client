@@ -12,6 +12,12 @@
     @include flex-sc;
     gap: 1rem;
 
+    .user-name-container {
+      cursor: pointer;
+      @include flex-cc();
+      gap: 10px;
+    }
+
     .ant-input-affix-wrapper {
       transition: unset;
       input {
@@ -31,7 +37,7 @@
   .header-section {
     color: $white;
     .ant-input-affix-wrapper {
-      background-color: $blue;
+      background-color: $dark-background;
       color: $white;
 
       input {

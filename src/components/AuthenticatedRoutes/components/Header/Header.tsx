@@ -1,10 +1,12 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useRef } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import { Input, AutoComplete, message } from "antd";
+import { Input, AutoComplete, message, Popover, Avatar } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
-import Settings from "../../../Settings/Settings";
+import axios from "axios";
 
+import Settings from "../../../Settings/Settings";
+import { ProfileCard } from "..";
+import { ProfileHandlerType } from "../ProfileCard/ProfileCard";
 import { FriendType, GlobalStoreType } from "@types";
 
 import "./Header.scss";
@@ -19,6 +21,8 @@ function Header() {
 
   const [queryUsers, setQueryUsers] = useState<FriendType[]>([]);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+
+  const profileCardRef = useRef<ProfileHandlerType>(null);
 
   async function getUsersQuery(query: string): Promise<void> {
     void message.loading({
@@ -49,7 +53,31 @@ function Header() {
         }`}
       >
         <div className="header-left-section header-section">
-          {authenticatedUser.userName}
+          <Popover
+            title={null}
+            content={<ProfileCard ref={profileCardRef} />}
+            placement="bottom"
+            trigger={["click"]}
+            overlayClassName={`profile-card-popover${
+              preferences.theme === "dark" ? " profile-popover-dark" : ""
+            }`}
+            onOpenChange={(open) => {
+              if (!open) {
+                if (profileCardRef?.current) {
+                  setTimeout(() => {
+                    profileCardRef.current?.resetStates();
+                  }, 300);
+                }
+              }
+            }}
+          >
+            <div className="user-name-container">
+              <Avatar src={authenticatedUser?.avatar} alt="" shape="circle" />
+              <span className="user-name-text">
+                {authenticatedUser.userName}
+              </span>
+            </div>
+          </Popover>
           <AutoComplete
             {...{
               popupMatchSelectWidth: false,
@@ -63,6 +91,11 @@ function Header() {
               enterButton
               allowClear
               placeholder="Search for users..."
+              onChange={(val) => {
+                if (!val.target.value) {
+                  setQueryUsers([]);
+                }
+              }}
               onSearch={(val) => {
                 void getUsersQuery(val);
               }}

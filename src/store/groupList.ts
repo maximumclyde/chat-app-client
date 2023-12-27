@@ -5,6 +5,7 @@ export type GroupType = {
   groupMembers: string[];
   groupAdmins: string[];
   createdAt: string;
+  avatar?: Blob;
   createdBy: {
     name: string;
     id: string;
