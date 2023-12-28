@@ -15,6 +15,8 @@ export type UserType = {
   avatar?: string;
 };
 
+type UpdateActionType = Partial<UserType>;
+
 const initUser = {} as UserType;
 
 const authenticatedUser = createSlice({
@@ -23,6 +25,15 @@ const authenticatedUser = createSlice({
   reducers: {
     setAuthenticatedUser(_, action: PayloadAction<UserType>) {
       return action.payload;
+    },
+    updateUserProperties(
+      state: UserType,
+      action: PayloadAction<UpdateActionType>
+    ) {
+      const updated = { ...state };
+      const payload = { ...action.payload };
+      Object.assign(updated, payload);
+      return updated;
     },
     userLogout() {
       localStorage.removeItem("authenticationToken");

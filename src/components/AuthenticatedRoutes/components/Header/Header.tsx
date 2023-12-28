@@ -1,13 +1,13 @@
 import { useState, Fragment, useRef } from "react";
 import { useSelector } from "react-redux";
-import { Input, AutoComplete, message, Popover, Avatar } from "antd";
+import { Popover, Avatar } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
-import axios from "axios";
 
 import Settings from "../../../Settings/Settings";
 import { ProfileCard } from "..";
+import { UsersSearch } from "./components";
 import { ProfileHandlerType } from "../ProfileCard/ProfileCard";
-import { FriendType, GlobalStoreType } from "@types";
+import { GlobalStoreType } from "@types";
 
 import "./Header.scss";
 
@@ -19,31 +19,9 @@ function Header() {
     (state: GlobalStoreType) => state.authenticatedUser
   );
 
-  const [queryUsers, setQueryUsers] = useState<FriendType[]>([]);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
   const profileCardRef = useRef<ProfileHandlerType>(null);
-
-  async function getUsersQuery(query: string): Promise<void> {
-    void message.loading({
-      content: "Searching...",
-      key: "usersQuery",
-      duration: 0,
-    });
-    try {
-      const usersRes = await axios.post<FriendType[]>("/userQuery", {
-        query,
-      });
-      message.destroy("usersQuery");
-      setQueryUsers(usersRes.data);
-    } catch (err) {
-      console.log("Error getting users: ", err);
-      void message.error({
-        content: "Something went wrong while getting users",
-        key: "usersQuery",
-      });
-    }
-  }
 
   return (
     <Fragment>
@@ -78,29 +56,7 @@ function Header() {
               </span>
             </div>
           </Popover>
-          <AutoComplete
-            {...{
-              popupMatchSelectWidth: false,
-              options: queryUsers.map((e) => ({
-                label: e.userName,
-                value: e.userName,
-              })),
-            }}
-          >
-            <Input.Search
-              enterButton
-              allowClear
-              placeholder="Search for users..."
-              onChange={(val) => {
-                if (!val.target.value) {
-                  setQueryUsers([]);
-                }
-              }}
-              onSearch={(val) => {
-                void getUsersQuery(val);
-              }}
-            />
-          </AutoComplete>
+          <UsersSearch />
         </div>
         <div className="header-right-section header-section">
           <SettingOutlined

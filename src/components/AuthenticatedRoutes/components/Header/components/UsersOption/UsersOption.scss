@@ -1,0 +1,23 @@
+@import "src/index.scss";
+
+.user-select-label {
+  @include flex-sc();
+  flex-wrap: nowrap;
+  gap: 10px;
+
+  .ant-card-meta-detail {
+    width: -moz-fill-available;
+    width: -webkit-fill-available;
+    .name-label {
+      @include flex-space();
+      width: 100%;
+    }
+  }
+}
+
+.select-label-dark {
+  color: $dark-color;
+  .ant-avatar {
+    border: $dark-border;
+  }
+}

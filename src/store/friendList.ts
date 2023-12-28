@@ -5,7 +5,7 @@ export type FriendType = {
   userName: string;
   userEmail: string;
   friendList: string[];
-  avatar?: Blob;
+  avatar?: string;
 };
 
 const initialListState = [] as FriendType[];

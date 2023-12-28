@@ -40,6 +40,10 @@
       background-color: $dark-background;
       color: $white;
 
+      .ant-input-clear-icon {
+        color: $dark-color;
+      }
+
       input {
         background-color: inherit;
         color: inherit;

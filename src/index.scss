@@ -83,3 +83,11 @@ $dark-color: #f9f9f9;
   align-items: $items;
   flex-direction: $direction;
 }
+
+.dark-popover.ant-select-dropdown {
+  @include dark-header-style();
+
+  .ant-select-option-active {
+    background-color: #191a19aa;
+  }
+}
