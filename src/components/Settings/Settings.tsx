@@ -6,7 +6,7 @@ import axios from "axios";
 
 import { settingsFields } from "./utils";
 import { useMediaQuery } from "@hooks";
-import { preferenceActions, authenticatedUserActions } from "@store-actions";
+import { preferenceActions, userActions } from "@store-actions";
 import { GlobalStoreType, PreferenceStateType } from "@types";
 import { FormFields, StyledButton, InfoModal } from "@ui-components";
 
@@ -30,11 +30,6 @@ function Settings(props: SettingsProps) {
   const { open, onCancel } = props;
 
   async function onPreferenceChange(key: string, value: any) {
-    void message.loading({
-      content: "Saving preference...",
-      duration: 0,
-      key: "preferenceSave",
-    });
     await axios
       .post<PreferenceStateType>("/userPreferences", {
         [key]: value,
@@ -69,7 +64,7 @@ function Settings(props: SettingsProps) {
         });
       })
       .then(() => {
-        dispatch(authenticatedUserActions.userLogout());
+        dispatch(userActions.userLogout());
         location.replace(`${location.protocol}//${location.host}/`);
       })
       .catch((err) => {

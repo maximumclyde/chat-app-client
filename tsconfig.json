@@ -31,7 +31,8 @@
       "@assets": ["./src/assets"],
       "@utils": ["./src/utils"],
       "@hooks": ["./src/hooks"],
-      "@store-actions": ["./src/store/storeActions"]
+      "@store-actions": ["./src/store/storeActions"],
+      "@socket": ["./src/Socket"]
     }
   },
   "include": ["src", ".eslintrc.cjs"],

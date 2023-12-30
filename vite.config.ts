@@ -25,6 +25,7 @@ export default defineConfig({
       "@utils": path.resolve(__dirname, "./src/utils"),
       "@hooks": path.resolve(__dirname, "./src/hooks"),
       "@store-actions": path.resolve(__dirname, "./src/store/storeActions"),
+      "@socket": path.resolve(__dirname, "./src/Socket"),
     },
   },
   plugins: [react()],

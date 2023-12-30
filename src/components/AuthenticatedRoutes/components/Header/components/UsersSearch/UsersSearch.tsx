@@ -6,7 +6,7 @@ import { AutoComplete, Input, message } from "antd";
 import { UsersOption } from "..";
 import { FriendType, GlobalStoreType, UserType } from "@types";
 import { toArrayBuffer } from "@utils";
-import { authenticatedUserActions } from "@store-actions";
+import { userActions } from "@store-actions";
 
 function UserSearch() {
   const { preferences } = useSelector(
@@ -38,12 +38,6 @@ function UserSearch() {
   }
 
   async function getUsersQuery(query: string): Promise<void> {
-    void message.loading({
-      content: "Searching...",
-      key: "usersQuery",
-      duration: 0,
-    });
-
     try {
       revokeAvatars();
       const usersRes = await axios.post<FriendType[]>("/userQuery", {
@@ -60,15 +54,14 @@ function UserSearch() {
     }
   }
 
-  async function requestHandle(
-    user: FriendType,
-    type: "request" | "removeRequest"
-  ) {
+  async function actionHandle(user: FriendType, type: "confirm" | "deny") {
+    const path = type === "confirm" ? "request" : "removeRequest";
+
     await axios
-      .post<UserType>(`/users/${type}/${user._id}`)
+      .post<UserType>(`/users/${path}/${user._id}`)
       .then(({ data }) => {
         dispatch(
-          authenticatedUserActions.updateUserProperties({
+          userActions.updateUserProperties({
             requestsMade: data?.requestsMade,
           })
         );
@@ -91,8 +84,8 @@ function UserSearch() {
           <UsersOption
             user={e}
             theme={preferences.theme}
-            requestHandle={requestHandle}
-            requestsMade={authenticatedUser?.requestsMade}
+            actionHandle={actionHandle}
+            denyActionUsers={authenticatedUser?.requestsMade}
           />
         ),
       }))}

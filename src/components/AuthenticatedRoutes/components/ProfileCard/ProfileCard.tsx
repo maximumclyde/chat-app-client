@@ -9,7 +9,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 
-import { authenticatedUserActions } from "@store-actions";
+import { userActions } from "@store-actions";
 import { GlobalStoreType, UserType } from "@types";
 import { toArrayBuffer } from "@utils";
 
@@ -90,11 +90,6 @@ const ProfileCard = forwardRef<ProfileHandlerType, Props>((_, ref) => {
   }
 
   async function onChangesSave() {
-    void message.loading({
-      content: "Saving profile picture...",
-      key: "profileUpdate",
-      duration: 0,
-    });
     const body = new FormData();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     body.append("avatar", fileList?.[0]?.originFileObj);
@@ -110,9 +105,7 @@ const ProfileCard = forwardRef<ProfileHandlerType, Props>((_, ref) => {
         if (data?.avatar) {
           avatar = window.URL.createObjectURL(toArrayBuffer(data?.avatar));
         }
-        dispatch(
-          authenticatedUserActions.setAuthenticatedUser({ ...data, avatar })
-        );
+        dispatch(userActions.setAuthenticatedUser({ ...data, avatar }));
       })
       .catch((err) => {
         void message.error({

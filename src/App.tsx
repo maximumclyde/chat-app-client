@@ -1,15 +1,17 @@
 import { useState, useEffect, lazy } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { message } from "antd";
 
-import { getAuthenticatedUser } from "@utils";
+import socket from "@socket";
+import { getAuthenticatedUser, toArrayBuffer } from "@utils";
 import {
   preferenceActions,
-  authenticatedUserActions,
+  userActions,
   friendListActions,
   groupListActions,
 } from "@store-actions";
-import { toArrayBuffer } from "@utils";
 import { Loading } from "@ui-components";
+import { GlobalStoreType } from "@types";
 
 const AuthenticatedRoutes = lazy(
   () => import("./components/AuthenticatedRoutes/AuthenticatedRoutes")
@@ -25,6 +27,9 @@ const providers = {
 };
 
 function App() {
+  const authenticatedUser = useSelector(
+    (state: GlobalStoreType) => state.authenticatedUser
+  );
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -38,9 +43,7 @@ function App() {
         if (user?.avatar) {
           avatar = window.URL.createObjectURL(toArrayBuffer(user?.avatar));
         }
-        dispatch(
-          authenticatedUserActions.setAuthenticatedUser({ ...user, avatar })
-        );
+        dispatch(userActions.setAuthenticatedUser({ ...user, avatar }));
         dispatch(preferenceActions.preferencesSetup(userPreferences));
         dispatch(friendListActions.addFriends(friends));
         dispatch(groupListActions.setupGroups(userGroups));
@@ -53,6 +56,26 @@ function App() {
         setLoading(false);
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isAuthenticated && authenticatedUser._id) {
+      socket.send(
+        JSON.stringify({
+          request: "create-session",
+          body: {
+            userId: authenticatedUser._id,
+          },
+        })
+      );
+
+      socket.onclose = function () {
+        void message.error({
+          content: "Something went wrong! Connection was lost.",
+          key: "socketClose",
+        });
+      };
+    }
+  }, [isAuthenticated, authenticatedUser?._id]);
 
   const RouteProvider = providers[isAuthenticated ? "auth" : "noAuth"];
 

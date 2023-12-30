@@ -1,13 +1,15 @@
-import { useState, Fragment, useRef } from "react";
-import { useSelector } from "react-redux";
-import { Popover, Avatar } from "antd";
-import { SettingOutlined } from "@ant-design/icons";
+import { useState, useEffect, Fragment, useRef, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Popover, Avatar, Badge } from "antd";
+import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 
 import Settings from "../../../Settings/Settings";
 import { ProfileCard } from "..";
-import { UsersSearch } from "./components";
+import { RequestsListCard, UsersSearch } from "./components";
 import { ProfileHandlerType } from "../ProfileCard/ProfileCard";
 import { GlobalStoreType } from "@types";
+import socket from "@socket";
+import { userActions } from "@store-actions";
 
 import "./Header.scss";
 
@@ -20,8 +22,44 @@ function Header() {
   );
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
   const profileCardRef = useRef<ProfileHandlerType>(null);
+
+  const handleSocketHeaderRequests = useCallback(
+    (event: MessageEvent<string>) => {
+      const { request, body } = JSON.parse(event.data);
+
+      if (request === "friend-request") {
+        dispatch(
+          userActions.addIdToUserProperties({ friendRequests: body._id })
+        );
+      } else if (request === "request-removed") {
+        dispatch(
+          userActions.removeIdFromUserProperties({ friendRequests: body._id })
+        );
+      } else if (request === "request-accept") {
+        dispatch(
+          userActions.removeIdFromUserProperties({ requestsMade: body._id })
+        );
+        dispatch(userActions.addIdToUserProperties({ friendList: body._id }));
+      } else if (request === "request-decline") {
+        dispatch(
+          userActions.removeIdFromUserProperties({ requestsMade: body._id })
+        );
+      }
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.addEventListener("message", handleSocketHeaderRequests);
+    }
+    return () => {
+      socket.removeEventListener("message", handleSocketHeaderRequests);
+    };
+  }, [handleSocketHeaderRequests]);
 
   return (
     <Fragment>
@@ -59,6 +97,20 @@ function Header() {
           <UsersSearch />
         </div>
         <div className="header-right-section header-section">
+          <Popover
+            title={null}
+            content={<RequestsListCard />}
+            placement="bottom"
+            trigger={["click"]}
+          >
+            <Badge
+              color="red"
+              count={authenticatedUser?.friendRequests?.length}
+              size="small"
+            >
+              <UserOutlined style={{ cursor: "pointer" }} />
+            </Badge>
+          </Popover>
           <SettingOutlined
             style={{ cursor: "pointer" }}
             onClick={() => {
