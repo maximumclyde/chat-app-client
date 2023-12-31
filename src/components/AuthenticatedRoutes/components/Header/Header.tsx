@@ -1,17 +1,28 @@
 import { useState, useEffect, Fragment, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Popover, Avatar, Badge } from "antd";
-import { SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { Popover, Avatar, Badge, notification, Tooltip } from "antd";
+import axios from "axios";
+import { SettingOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 
 import Settings from "../../../Settings/Settings";
 import { ProfileCard } from "..";
 import { RequestsListCard, UsersSearch } from "./components";
 import { ProfileHandlerType } from "../ProfileCard/ProfileCard";
-import { GlobalStoreType } from "@types";
+import { GlobalStoreType, FriendType } from "@types";
 import socket from "@socket";
-import { userActions } from "@store-actions";
+import { toArrayBuffer } from "@utils";
+import { userActions, friendListActions } from "@store-actions";
 
 import "./Header.scss";
+
+type RequestBodyType = {
+  _id: string;
+};
+
+type SocketRequestType = {
+  request: string;
+  body: RequestBodyType;
+};
 
 function Header() {
   const { preferences } = useSelector(
@@ -28,7 +39,7 @@ function Header() {
 
   const handleSocketHeaderRequests = useCallback(
     (event: MessageEvent<string>) => {
-      const { request, body } = JSON.parse(event.data);
+      const { request, body } = JSON.parse(event.data) as SocketRequestType;
 
       if (request === "friend-request") {
         dispatch(
@@ -43,6 +54,28 @@ function Header() {
           userActions.removeIdFromUserProperties({ requestsMade: body._id })
         );
         dispatch(userActions.addIdToUserProperties({ friendList: body._id }));
+
+        axios
+          .get<FriendType>(`/users/${body._id}`)
+          .then((res) => {
+            let avatar = undefined;
+            if (res.data?.avatar) {
+              avatar = URL.createObjectURL(toArrayBuffer(res.data.avatar));
+            }
+            dispatch(friendListActions.addFriend({ ...res.data, avatar }));
+            notification.success({
+              message: (
+                <span>
+                  <b>{res.data.userName}&nbsp;</b>has accepted your request!
+                </span>
+              ),
+              duration: 3,
+              placement: "bottomLeft",
+            });
+          })
+          .catch((err) => {
+            console.log("Error getting friend: ", err);
+          });
       } else if (request === "request-decline") {
         dispatch(
           userActions.removeIdFromUserProperties({ requestsMade: body._id })
@@ -103,20 +136,24 @@ function Header() {
             placement="bottom"
             trigger={["click"]}
           >
-            <Badge
-              color="red"
-              count={authenticatedUser?.friendRequests?.length}
-              size="small"
-            >
-              <UserOutlined style={{ cursor: "pointer" }} />
-            </Badge>
+            <Tooltip title="Search for users">
+              <Badge
+                color="red"
+                count={authenticatedUser?.friendRequests?.length}
+                size="small"
+              >
+                <UsergroupAddOutlined style={{ cursor: "pointer" }} />
+              </Badge>
+            </Tooltip>
           </Popover>
-          <SettingOutlined
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              setSettingsOpen(true);
-            }}
-          />
+          <Tooltip title="Settings">
+            <SettingOutlined
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setSettingsOpen(true);
+              }}
+            />
+          </Tooltip>
         </div>
       </div>
       {settingsOpen && (

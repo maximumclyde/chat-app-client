@@ -14,23 +14,27 @@ const friendList = createSlice({
   name: "friendList",
   initialState: initialListState,
   reducers: {
+    setupFriends(_, action: PayloadAction<FriendType[]>) {
+      return [...action.payload];
+    },
     addFriend(state, action: PayloadAction<FriendType>) {
-      state.push(action.payload);
-      return state;
+      const tmp = [...state];
+      tmp.push(action.payload);
+      return tmp;
     },
     addFriends(state, action: PayloadAction<FriendType[]>) {
+      const tmp = [...state];
       for (let i = 0; i < action.payload.length; i++) {
-        state.push(action.payload[i]);
+        tmp.push(action.payload[i]);
       }
-      return state;
+      return tmp;
     },
     removeFriend(state, action: PayloadAction<FriendType>) {
-      const userIndex = state.findIndex(
-        (el) => el?._id === action.payload?._id
-      );
+      const tmp = [...state];
+      const userIndex = tmp.findIndex((el) => el?._id === action.payload?._id);
       if (userIndex > -1) {
-        state.splice(userIndex, 1);
-        return state;
+        tmp.splice(userIndex, 1);
+        return tmp;
       }
     },
   },

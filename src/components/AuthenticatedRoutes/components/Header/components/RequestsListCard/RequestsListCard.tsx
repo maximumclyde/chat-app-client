@@ -6,7 +6,7 @@ import { Card, message } from "antd";
 import { UsersOption } from "..";
 import { GlobalStoreType, FriendType, UserType } from "@types";
 import { toArrayBuffer } from "@utils";
-import { userActions } from "@store-actions";
+import { userActions, friendListActions } from "@store-actions";
 import { StyledButton } from "@ui-components";
 
 import "./RequestsListCard.scss";
@@ -33,6 +33,10 @@ function RequestsListCard() {
             friendRequests: res.data.friendRequests,
           })
         );
+
+        if (path === "accept") {
+          dispatch(friendListActions.addFriend(user));
+        }
       })
       .catch((err) => {
         void message.error({

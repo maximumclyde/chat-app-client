@@ -39,14 +39,35 @@ function App() {
     getAuthenticatedUser()
       .then((res) => {
         const { user, userPreferences, friends, userGroups } = res;
+
         let avatar = undefined;
         if (user?.avatar) {
           avatar = window.URL.createObjectURL(toArrayBuffer(user?.avatar));
         }
+
+        const fList = [];
+        for (const friend of friends) {
+          let fa = undefined;
+          if (friend?.avatar) {
+            fa = URL.createObjectURL(toArrayBuffer(friend?.avatar || ""));
+          }
+
+          fList.push({ ...friend, avatar: fa });
+        }
+
+        const gList = [];
+        for (const group of userGroups) {
+          let ga = undefined;
+          if (group?.avatar) {
+            ga = URL.createObjectURL(toArrayBuffer(group?.avatar || ""));
+          }
+          gList.push({ ...group, avatar: ga });
+        }
+
         dispatch(userActions.setAuthenticatedUser({ ...user, avatar }));
         dispatch(preferenceActions.preferencesSetup(userPreferences));
-        dispatch(friendListActions.addFriends(friends));
-        dispatch(groupListActions.setupGroups(userGroups));
+        dispatch(friendListActions.setupFriends(fList));
+        dispatch(groupListActions.setupGroups(gList));
         setIsAuthenticated(true);
         setLoading(false);
       })

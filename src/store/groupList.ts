@@ -1,11 +1,12 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export type GroupType = {
+  _id: string;
   groupName: string;
   groupMembers: string[];
   groupAdmins: string[];
   createdAt: string;
-  avatar?: Blob;
+  avatar?: string;
   createdBy: {
     name: string;
     id: string;
