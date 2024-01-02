@@ -83,7 +83,9 @@ function ChatSidebar(props: SidebarProps) {
           allowClear
           placeholder="Search..."
           onChange={searchHandler}
-          className="sidebar-search"
+          className={`sidebar-search ${
+            preferences.theme === "dark" ? "dark-antd-input" : ""
+          }`}
         />
       </div>
       <div className="sidebar-list">

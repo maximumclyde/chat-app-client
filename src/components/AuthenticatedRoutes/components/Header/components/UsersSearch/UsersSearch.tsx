@@ -94,6 +94,7 @@ function UserSearch() {
       <Input.Search
         enterButton
         allowClear
+        className={preferences?.theme === "dark" ? "dark-antd-input" : ""}
         placeholder="Search for users..."
         onSearch={(val) => {
           if (val) {

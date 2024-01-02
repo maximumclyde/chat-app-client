@@ -40,22 +40,5 @@
     .ant-badge {
       color: inherit;
     }
-
-    .ant-input-affix-wrapper {
-      background-color: $dark-background;
-      color: $white;
-
-      .ant-input-clear-icon {
-        color: $dark-color;
-      }
-
-      input {
-        background-color: inherit;
-        color: inherit;
-        &::placeholder {
-          color: #f9f9f9aa;
-        }
-      }
-    }
   }
 }

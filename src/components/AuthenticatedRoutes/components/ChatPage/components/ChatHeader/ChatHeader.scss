@@ -1,0 +1,23 @@
+@import "/src/index.scss";
+
+.chat-header-container {
+  height: 50px;
+  width: 100%;
+  @include light-header-style();
+  @include flex-space();
+  border-bottom: 1px solid $light-border;
+  gap: 1rem;
+  padding: 0 1rem;
+  cursor: default;
+
+  .chat-header-section,
+  .ant-card-meta {
+    @include flex-sc();
+    gap: 10px;
+  }
+}
+
+.chat-header-container.chat-header-dark {
+  @include dark-header-style();
+  border-bottom: 1px solid $dark-border;
+}

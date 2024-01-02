@@ -122,9 +122,7 @@ function Header() {
           >
             <div className="user-name-container">
               <Avatar src={authenticatedUser?.avatar} alt="" shape="circle" />
-              <span className="user-name-text">
-                {authenticatedUser.userName}
-              </span>
+              <b className="user-name-text">{authenticatedUser.userName}</b>
             </div>
           </Popover>
           <UsersSearch />

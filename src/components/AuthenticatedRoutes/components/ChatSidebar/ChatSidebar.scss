@@ -23,7 +23,8 @@
 
     .sidebar-option {
       height: 50px;
-      width: 100%;
+      width: calc(100% - 5px);
+      padding-left: 5px;
       @include flex-sc();
       border-bottom: 1px solid $light-border;
 
@@ -58,23 +59,6 @@
 .main-sidebar-container.sidebar-dark {
   @include dark-header-style();
   border-right: 1px solid $dark-border;
-
-  .ant-input-affix-wrapper {
-    background-color: $dark-background;
-    color: $white;
-
-    .ant-input-clear-icon {
-      color: $dark-color;
-    }
-
-    input {
-      background-color: inherit;
-      color: inherit;
-      &::placeholder {
-        color: #f9f9f9aa;
-      }
-    }
-  }
 
   .sidebar-list {
     .sidebar-option {

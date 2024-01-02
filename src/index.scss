@@ -93,3 +93,30 @@ $dark-active: #292f2f;
     background-color: #191a19aa;
   }
 }
+
+@mixin dark-input() {
+  background-color: $dark-background;
+  color: $white;
+
+  .ant-input-clear-icon {
+    color: $dark-color;
+  }
+
+  input {
+    background-color: inherit;
+    color: inherit;
+    &::placeholder {
+      color: #f9f9f9aa;
+    }
+  }
+}
+
+.ant-input-affix-wrapper.dark-antd-input {
+  @include dark-input();
+}
+
+.ant-input-group-wrapper.dark-antd-input {
+  .ant-input-affix-wrapper {
+    @include dark-input();
+  }
+}

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import dayjs from "dayjs";
 
 export type MessageType = {
   content: string;
@@ -17,13 +18,17 @@ const userMessages = createSlice({
   initialState: initialMessageArray,
   reducers: {
     setupMessages(_, action: PayloadAction<MessageType[]>) {
-      return [...action.payload];
+      return [...action.payload].sort(
+        (a, b) => dayjs(a.createdAt).valueOf() - dayjs(b.createdAt).valueOf()
+      );
     },
     addMessages(state, action: PayloadAction<MessageType[]>) {
       for (let i = 0; i < action.payload.length; i++) {
         state.push(action.payload[i]);
       }
-      return state;
+      return state.sort(
+        (a, b) => dayjs(a.createdAt).valueOf() - dayjs(b.createdAt).valueOf()
+      );
     },
   },
 });
