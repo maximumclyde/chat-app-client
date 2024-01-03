@@ -16,8 +16,11 @@ type SocketRequestType = {
   body: MessageType;
 };
 
+type Callback = () => any;
+
 type MessageSectionProps = {
   viewObject?: Partial<FriendType & GroupType & { type: "GROUP" | "FRIEND" }>;
+  requestPrevMessages: (param?: Event | Callback) => any;
 };
 
 function MessageSection(props: MessageSectionProps) {
@@ -31,14 +34,41 @@ function MessageSection(props: MessageSectionProps) {
 
   const dispatch = useDispatch();
 
+  const { viewObject, requestPrevMessages } = props;
+
+  const scrollIfOnBottom = useCallback((checkBottom = true) => {
+    const container = document.getElementById("message-list-container");
+    if (container) {
+      if (
+        container.scrollTop >=
+          container.scrollHeight - container.offsetHeight - 30 ||
+        !checkBottom
+      ) {
+        setTimeout(() => {
+          container.scroll({
+            top: container.scrollHeight,
+            behavior: "instant",
+          });
+        }, 0);
+      }
+    }
+  }, []);
+
   const messageSocketHandler = useCallback(
     (event: MessageEvent<string>) => {
       const { request, body } = JSON.parse(event.data) as SocketRequestType;
       if (request === "message-received" || request === "group-message") {
         dispatch(userMessageActions.addMessages([body]));
+
+        if (
+          body?.senderId === viewObject?._id ||
+          body?.groupId === viewObject?._id
+        ) {
+          scrollIfOnBottom();
+        }
       }
     },
-    [dispatch]
+    [dispatch, viewObject, scrollIfOnBottom]
   );
 
   useEffect(() => {
@@ -50,7 +80,36 @@ function MessageSection(props: MessageSectionProps) {
     };
   }, [messageSocketHandler]);
 
-  const { viewObject } = props;
+  useEffect(() => {
+    const container = document.getElementById("message-list-container");
+    if (container) {
+      container.scroll({ top: container.scrollHeight, behavior: "instant" });
+      const renderedMessages = document.getElementsByClassName(
+        "single-message-container"
+      );
+
+      setTimeout(() => {
+        container.addEventListener("scroll", requestPrevMessages);
+      }, 0);
+
+      if (!container.scrollTop && !renderedMessages.length) {
+        requestPrevMessages(() => {
+          setTimeout(() => {
+            container.scroll({
+              top: container.scrollHeight,
+              behavior: "instant",
+            });
+          }, 0);
+        });
+      }
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", requestPrevMessages);
+      }
+    };
+  }, [requestPrevMessages]);
 
   function messageFilter(message: MessageType): boolean {
     if (!viewObject) {
@@ -80,6 +139,7 @@ function MessageSection(props: MessageSectionProps) {
       })
       .then((res) => {
         dispatch(userMessageActions.addMessages([res.data]));
+        scrollIfOnBottom(false);
       })
       .catch((err) => {
         void message.error({
@@ -99,14 +159,15 @@ function MessageSection(props: MessageSectionProps) {
         display: !viewObject ? "none" : undefined,
       }}
     >
-      <div className="message-list-container">
-        {userMessages.flatMap((message) => {
-          if (!messageFilter(message)) {
-            return [];
-          }
-
-          return <MessageBubble message={message} />;
-        })}
+      <div className="message-list-container" id="message-list-container">
+        <div className="messages">
+          {userMessages.flatMap((message, key) => {
+            if (!messageFilter(message)) {
+              return [];
+            }
+            return <MessageBubble message={message} key={`${key}`} />;
+          })}
+        </div>
       </div>
       <MessageInput onSend={onSend} />
     </div>

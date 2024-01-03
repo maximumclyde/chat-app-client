@@ -10,11 +10,19 @@
 
   .message-list-container {
     height: calc(100% - 50px);
-    width: 96%;
+    width: 100%;
+    display: block;
     overflow-x: hidden;
     overflow-y: auto;
-    @include flex(flex-end, center, column);
     gap: 10px;
+
+    .messages {
+      height: fit-content;
+      width: 98%;
+      padding: 1%;
+      @include flex(flex-end, center, column);
+      gap: 10px;
+    }
   }
 }
 

@@ -1,11 +1,11 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
 import { message } from "antd";
+import axios from "axios";
 
 import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
-import { ChatHeader, MessageSection } from "./components";
 import { userMessageActions } from "@store-actions";
+import { ChatHeader, MessageSection } from "./components";
 
 import "./ChatPage.scss";
 
@@ -13,12 +13,11 @@ export type ChatHandle = {
   changeChatView: (id: string, type: "GROUP" | "FRIEND") => any;
 };
 
+type Callback = () => any;
+
 const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
   const { preferences } = useSelector(
     (state: GlobalStoreType) => state.preferences
-  );
-  const userMessages = useSelector(
-    (state: GlobalStoreType) => state.userMessages
   );
   const friendList = useSelector((state: GlobalStoreType) => state.friendList);
   const groupList = useSelector((state: GlobalStoreType) => state.groupList);
@@ -28,39 +27,44 @@ const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (!viewObject?._id) {
-      return;
-    }
+  const requestPrevMessages = useCallback(
+    (callback?: Event | Callback) => {
+      const container = document.getElementById("message-list-container");
 
-    if (
-      userMessages.find(
-        (e) =>
-          e.senderId === viewObject._id ||
-          e.groupId === viewObject._id ||
-          e.receiverId === viewObject._id
-      )
-    ) {
-      return;
-    }
+      if (!viewObject?._id) {
+        return;
+      }
 
-    let URI = `/message/${viewObject._id}`;
-    if (viewObject?.type === "GROUP") {
-      URI = `message/group/${viewObject._id}`;
-    }
+      if (!container) {
+        return;
+      }
 
-    axios
-      .get<MessageType[]>(URI)
-      .then((res) => {
-        dispatch(userMessageActions.addMessages(res.data));
-      })
-      .catch((err) => {
-        void message.error({
-          content: "Something went wrong while trying to get the messages",
+      if (container.scrollTop) {
+        return;
+      }
+
+      let URI = `/message/${viewObject._id}`;
+      if (viewObject?.type === "GROUP") {
+        URI = `message/group/${viewObject._id}`;
+      }
+
+      axios
+        .get<MessageType[]>(URI)
+        .then((res) => {
+          dispatch(userMessageActions.addMessages(res.data));
+          if (typeof callback === "function") {
+            callback();
+          }
+        })
+        .catch((err) => {
+          void message.error({
+            content: "Something went wrong while trying to get the messages",
+          });
+          console.log("Error getting messages: ", err);
         });
-        console.log("Error getting messages: ", err);
-      });
-  }, [viewObject, dispatch, userMessages]);
+    },
+    [viewObject, dispatch]
+  );
 
   useImperativeHandle(
     ref,
@@ -95,7 +99,10 @@ const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
       }`}
     >
       <ChatHeader viewObject={viewObject} />
-      <MessageSection viewObject={viewObject} />
+      <MessageSection
+        viewObject={viewObject}
+        requestPrevMessages={requestPrevMessages}
+      />
     </div>
   );
 });

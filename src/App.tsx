@@ -36,50 +36,62 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getAuthenticatedUser()
-      .then((res) => {
-        const { user, userPreferences, friends, userGroups } = res;
+    let call = true;
 
-        let avatar = undefined;
-        if (user?.avatar) {
-          avatar = window.URL.createObjectURL(toArrayBuffer(user?.avatar));
-        }
+    if (call) {
+      getAuthenticatedUser()
+        .then((res) => {
+          const { user, userPreferences, friends, userGroups } = res;
 
-        const fList = [];
-        for (const friend of friends) {
-          let fa = undefined;
-          if (friend?.avatar) {
-            fa = URL.createObjectURL(toArrayBuffer(friend?.avatar || ""));
+          let avatar = undefined;
+          if (user?.avatar) {
+            avatar = window.URL.createObjectURL(toArrayBuffer(user?.avatar));
           }
 
-          fList.push({ ...friend, avatar: fa });
-        }
+          const fList = [];
+          for (const friend of friends) {
+            let fa = undefined;
+            if (friend?.avatar) {
+              fa = URL.createObjectURL(toArrayBuffer(friend?.avatar || ""));
+            }
 
-        const gList = [];
-        for (const group of userGroups) {
-          let ga = undefined;
-          if (group?.avatar) {
-            ga = URL.createObjectURL(toArrayBuffer(group?.avatar || ""));
+            fList.push({ ...friend, avatar: fa });
           }
-          gList.push({ ...group, avatar: ga });
-        }
 
-        dispatch(userActions.setAuthenticatedUser({ ...user, avatar }));
-        dispatch(preferenceActions.preferencesSetup(userPreferences));
-        dispatch(friendListActions.setupFriends(fList));
-        dispatch(groupListActions.setupGroups(gList));
-        setIsAuthenticated(true);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log("Error getting user: ", err?.message || err);
-        setIsAuthenticated(false);
-        setLoading(false);
-      });
+          const gList = [];
+          for (const group of userGroups) {
+            let ga = undefined;
+            if (group?.avatar) {
+              ga = URL.createObjectURL(toArrayBuffer(group?.avatar || ""));
+            }
+            gList.push({ ...group, avatar: ga });
+          }
+
+          dispatch(userActions.setAuthenticatedUser({ ...user, avatar }));
+          dispatch(preferenceActions.preferencesSetup(userPreferences));
+          dispatch(friendListActions.setupFriends(fList));
+          dispatch(groupListActions.setupGroups(gList));
+          setIsAuthenticated(true);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log("Error getting user: ", err?.message || err);
+          setIsAuthenticated(false);
+          setLoading(false);
+        });
+    }
+
+    return () => {
+      call = false;
+    };
   }, [dispatch]);
 
   useEffect(() => {
-    if (isAuthenticated && authenticatedUser._id) {
+    if (loading) {
+      return;
+    }
+
+    function send() {
       socket.send(
         JSON.stringify({
           request: "create-session",
@@ -88,6 +100,14 @@ function App() {
           },
         })
       );
+    }
+
+    if (isAuthenticated && authenticatedUser._id) {
+      if (socket.readyState !== WebSocket.OPEN) {
+        socket.onopen = send;
+      } else {
+        send();
+      }
 
       socket.onclose = function () {
         void message.error({
@@ -95,8 +115,10 @@ function App() {
           key: "socketClose",
         });
       };
+    } else {
+      socket.close();
     }
-  }, [isAuthenticated, authenticatedUser?._id]);
+  }, [isAuthenticated, authenticatedUser?._id, loading]);
 
   const RouteProvider = providers[isAuthenticated ? "auth" : "noAuth"];
 
