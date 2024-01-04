@@ -41,7 +41,7 @@ function MessageSection(props: MessageSectionProps) {
     if (container) {
       if (
         container.scrollTop >=
-          container.scrollHeight - container.offsetHeight - 30 ||
+          container.scrollHeight - container.offsetHeight - 50 ||
         !checkBottom
       ) {
         setTimeout(() => {
@@ -84,24 +84,12 @@ function MessageSection(props: MessageSectionProps) {
     const container = document.getElementById("message-list-container");
     if (container) {
       container.scroll({ top: container.scrollHeight, behavior: "instant" });
-      const renderedMessages = document.getElementsByClassName(
-        "single-message-container"
-      );
 
       setTimeout(() => {
         container.addEventListener("scroll", requestPrevMessages);
       }, 0);
 
-      if (!container.scrollTop && !renderedMessages.length) {
-        requestPrevMessages(() => {
-          setTimeout(() => {
-            container.scroll({
-              top: container.scrollHeight,
-              behavior: "instant",
-            });
-          }, 0);
-        });
-      }
+      requestPrevMessages();
     }
 
     return () => {

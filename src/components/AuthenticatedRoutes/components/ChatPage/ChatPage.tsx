@@ -1,4 +1,11 @@
-import { useState, useCallback, forwardRef, useImperativeHandle } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { message } from "antd";
 import axios from "axios";
@@ -13,45 +20,50 @@ export type ChatHandle = {
   changeChatView: (id: string, type: "GROUP" | "FRIEND") => any;
 };
 
+type ViewObjectType = Partial<
+  FriendType & GroupType & { type: "GROUP" | "FRIEND" }
+>;
+
 type Callback = () => any;
 
 const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
   const { preferences } = useSelector(
     (state: GlobalStoreType) => state.preferences
   );
+  const userMessages = useSelector(
+    (state: GlobalStoreType) => state.userMessages
+  );
   const friendList = useSelector((state: GlobalStoreType) => state.friendList);
   const groupList = useSelector((state: GlobalStoreType) => state.groupList);
 
-  const [viewObject, setViewObject] =
-    useState<Partial<FriendType & GroupType & { type: "GROUP" | "FRIEND" }>>();
+  const [viewObject, setViewObject] = useState<ViewObjectType>();
 
   const dispatch = useDispatch();
+  const prevQuery = useRef<string>("");
+  const mesNo = useRef<number>(0);
 
   const requestPrevMessages = useCallback(
     (callback?: Event | Callback) => {
       const container = document.getElementById("message-list-container");
 
-      if (!viewObject?._id) {
+      if (!viewObject?._id || !container || container?.scrollTop) {
         return;
       }
 
-      if (!container) {
-        return;
-      }
-
-      if (container.scrollTop) {
-        return;
-      }
-
-      let URI = `/message/${viewObject._id}`;
+      let URI = `/message/${viewObject._id}?messagesExchanged=${mesNo.current}`;
       if (viewObject?.type === "GROUP") {
-        URI = `message/group/${viewObject._id}`;
+        URI = `message/group/${viewObject._id}?messagesExchanged=${mesNo.current}`;
+      }
+
+      if (URI === prevQuery.current) {
+        return;
       }
 
       axios
         .get<MessageType[]>(URI)
         .then((res) => {
           dispatch(userMessageActions.addMessages(res.data));
+          prevQuery.current = URI;
           if (typeof callback === "function") {
             callback();
           }
@@ -66,6 +78,20 @@ const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
     [viewObject, dispatch]
   );
 
+  useEffect(() => {
+    let messagesExchanged = 0;
+    for (const message of userMessages) {
+      if (
+        message.senderId === viewObject?._id ||
+        message.receiverId === viewObject?._id ||
+        message.groupId === viewObject?._id
+      ) {
+        ++messagesExchanged;
+      }
+    }
+    mesNo.current = messagesExchanged;
+  }, [userMessages, viewObject]);
+
   useImperativeHandle(
     ref,
     () => {
@@ -79,11 +105,15 @@ const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
             const f = friendList.find((e) => e._id === id);
             if (f) {
               setViewObject({ ...f, type: "FRIEND" });
+              prevQuery.current = "";
+              mesNo.current = 0;
             }
           } else {
             const g = groupList.find((e) => e._id === id);
             if (g) {
               setViewObject({ ...g, type: "GROUP" });
+              prevQuery.current = "";
+              mesNo.current = 0;
             }
           }
         },

@@ -57,13 +57,13 @@ function ChatSidebar(props: SidebarProps) {
     let count = 0;
     if (type === "FRIEND") {
       for (const message of userMessages) {
-        if (message.senderId === id && message.messageStatus !== "SEEN") {
+        if (message.senderId === id || message?.receiverId === id) {
           ++count;
         }
       }
     } else {
       for (const message of userMessages) {
-        if (message.groupId === id && message.messageStatus !== "SEEN") {
+        if (message.groupId === id) {
           ++count;
         }
       }
