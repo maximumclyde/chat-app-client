@@ -6,7 +6,7 @@ import { SettingOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 
 import Settings from "../../../Settings/Settings";
 import { ProfileCard } from "..";
-import { RequestsListCard, UsersSearch } from "./components";
+import { RequestsListCard, UsersSearch, FindUsersModal } from "./components";
 import { ProfileHandlerType } from "../ProfileCard/ProfileCard";
 import { GlobalStoreType, FriendType } from "@types";
 import socket from "@socket";
@@ -33,6 +33,7 @@ function Header() {
   );
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const [usersModalOpen, setUsersModalOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
 
   const profileCardRef = useRef<ProfileHandlerType>(null);
@@ -102,7 +103,7 @@ function Header() {
         }`}
       >
         <div className="header-left-section header-section">
-          <Popover
+          {/* <Popover
             title={null}
             content={<ProfileCard ref={profileCardRef} />}
             placement="bottom"
@@ -119,31 +120,36 @@ function Header() {
                 }
               }
             }}
-          >
-            <div className="user-name-container">
-              <Avatar src={authenticatedUser?.avatar} alt="" shape="circle" />
-              <b className="user-name-text">{authenticatedUser.userName}</b>
-            </div>
-          </Popover>
-          <UsersSearch />
+          > */}
+          <div className="user-name-container">
+            <Avatar src={authenticatedUser?.avatar} alt="" shape="circle" />
+            <b className="user-name-text">{authenticatedUser.userName}</b>
+          </div>
+          {/* </Popover> */}
+          {/* <UsersSearch /> */}
         </div>
         <div className="header-right-section header-section">
-          <Popover
+          {/* <Popover
             title={null}
             content={<RequestsListCard />}
             placement="bottom"
             trigger={["click"]}
-          >
-            <Tooltip title="Search for users">
-              <Badge
-                color="red"
-                count={authenticatedUser?.friendRequests?.length}
-                size="small"
-              >
-                <UsergroupAddOutlined style={{ cursor: "pointer" }} />
-              </Badge>
-            </Tooltip>
-          </Popover>
+          > */}
+          <Tooltip title="Search for users">
+            <Badge
+              color="red"
+              count={authenticatedUser?.friendRequests?.length}
+              size="small"
+            >
+              <UsergroupAddOutlined
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setUsersModalOpen(true);
+                }}
+              />
+            </Badge>
+          </Tooltip>
+          {/* </Popover> */}
           <Tooltip title="Settings">
             <SettingOutlined
               style={{ cursor: "pointer" }}
@@ -154,6 +160,16 @@ function Header() {
           </Tooltip>
         </div>
       </div>
+      {usersModalOpen && (
+        <FindUsersModal
+          {...{
+            open: usersModalOpen,
+            onCancel() {
+              setUsersModalOpen(false);
+            },
+          }}
+        />
+      )}
       {settingsOpen && (
         <Settings
           open={settingsOpen}

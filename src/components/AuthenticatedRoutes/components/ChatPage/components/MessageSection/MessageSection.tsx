@@ -16,11 +16,10 @@ type SocketRequestType = {
   body: MessageType;
 };
 
-type Callback = () => any;
-
 type MessageSectionProps = {
   viewObject?: Partial<FriendType & GroupType & { type: "GROUP" | "FRIEND" }>;
-  requestPrevMessages: (param?: Event | Callback) => any;
+  requestPrevMessages: () => any;
+  onNewMessage: (id: string) => void;
 };
 
 function MessageSection(props: MessageSectionProps) {
@@ -34,7 +33,7 @@ function MessageSection(props: MessageSectionProps) {
 
   const dispatch = useDispatch();
 
-  const { viewObject, requestPrevMessages } = props;
+  const { viewObject, requestPrevMessages, onNewMessage } = props;
 
   const scrollIfOnBottom = useCallback((checkBottom = true) => {
     const container = document.getElementById("message-list-container");
@@ -60,6 +59,11 @@ function MessageSection(props: MessageSectionProps) {
       if (request === "message-received" || request === "group-message") {
         dispatch(userMessageActions.addMessages([body]));
 
+        const sendId = body?.groupId || body?.senderId;
+        if (viewObject?._id !== sendId) {
+          onNewMessage(sendId);
+        }
+
         if (
           body?.senderId === viewObject?._id ||
           body?.groupId === viewObject?._id
@@ -68,7 +72,7 @@ function MessageSection(props: MessageSectionProps) {
         }
       }
     },
-    [dispatch, viewObject, scrollIfOnBottom]
+    [dispatch, viewObject, scrollIfOnBottom, onNewMessage]
   );
 
   useEffect(() => {

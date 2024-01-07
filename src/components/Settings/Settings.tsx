@@ -83,9 +83,6 @@ function Settings(props: SettingsProps) {
           open,
           onCancel,
           title: "Settings",
-          closable: mobile,
-          maskClosable: true,
-          centered: true,
           footer: (
             <StyledButton
               {...{

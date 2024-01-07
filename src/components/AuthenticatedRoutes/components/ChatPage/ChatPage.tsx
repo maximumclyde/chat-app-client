@@ -1,10 +1,10 @@
 import {
+  useRef,
   useState,
   useEffect,
-  useCallback,
   forwardRef,
+  useCallback,
   useImperativeHandle,
-  useRef,
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { message } from "antd";
@@ -24,9 +24,11 @@ type ViewObjectType = Partial<
   FriendType & GroupType & { type: "GROUP" | "FRIEND" }
 >;
 
-type Callback = () => any;
+type ChatPageProps = {
+  onNewMessage: (id: string) => void;
+};
 
-const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
+const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
   const { preferences } = useSelector(
     (state: GlobalStoreType) => state.preferences
   );
@@ -39,58 +41,57 @@ const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
   const [viewObject, setViewObject] = useState<ViewObjectType>();
 
   const dispatch = useDispatch();
-  const prevQuery = useRef<string>("");
+  const prevQueryLimit = useRef<boolean>(false);
   const mesNo = useRef<number>(0);
 
-  const requestPrevMessages = useCallback(
-    (callback?: Event | Callback) => {
-      const container = document.getElementById("message-list-container");
+  const requestPrevMessages = useCallback(() => {
+    const container = document.getElementById("message-list-container");
 
-      if (!viewObject?._id || !container || container?.scrollTop) {
-        return;
-      }
+    if (!viewObject?._id || !container || container?.scrollTop) {
+      return;
+    }
 
-      let URI = `/message/${viewObject._id}?messagesExchanged=${mesNo.current}`;
-      if (viewObject?.type === "GROUP") {
-        URI = `message/group/${viewObject._id}?messagesExchanged=${mesNo.current}`;
-      }
+    let URI = `/message/${viewObject._id}?messagesExchanged=${mesNo.current}`;
+    if (viewObject?.type === "GROUP") {
+      URI = `message/group/${viewObject._id}?messagesExchanged=${mesNo.current}`;
+    }
 
-      if (URI === prevQuery.current) {
-        return;
-      }
+    if (prevQueryLimit.current) {
+      return;
+    }
 
-      axios
-        .get<MessageType[]>(URI)
-        .then((res) => {
-          dispatch(userMessageActions.addMessages(res.data));
-          prevQuery.current = URI;
-          if (typeof callback === "function") {
-            callback();
-          }
-        })
-        .catch((err) => {
-          void message.error({
-            content: "Something went wrong while trying to get the messages",
+    const prevScrollHeight = container.scrollHeight;
+
+    axios
+      .get<MessageType[]>(URI)
+      .then((res) => {
+        if (!res.data.length) {
+          prevQueryLimit.current = true;
+          return;
+        }
+
+        dispatch(userMessageActions.addMessages(res.data));
+
+        setTimeout(() => {
+          container.scroll({
+            top: container.scrollHeight - prevScrollHeight,
+            behavior: "instant",
           });
-          console.log("Error getting messages: ", err);
+        }, 0);
+      })
+      .catch((err) => {
+        void message.error({
+          content: "Something went wrong while trying to get the messages",
         });
-    },
-    [viewObject, dispatch]
-  );
+        console.log("Error getting messages: ", err);
+      });
+  }, [viewObject, dispatch]);
 
   useEffect(() => {
-    let messagesExchanged = 0;
-    for (const message of userMessages) {
-      if (
-        message.senderId === viewObject?._id ||
-        message.receiverId === viewObject?._id ||
-        message.groupId === viewObject?._id
-      ) {
-        ++messagesExchanged;
-      }
+    if (viewObject?._id) {
+      updateMessageNumber(userMessages, viewObject?._id);
     }
-    mesNo.current = messagesExchanged;
-  }, [userMessages, viewObject]);
+  }, [viewObject, userMessages]);
 
   useImperativeHandle(
     ref,
@@ -101,26 +102,46 @@ const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
             return;
           }
 
+          let tmpNewViewObject = {} as ViewObjectType;
+
           if (type === "FRIEND") {
             const f = friendList.find((e) => e._id === id);
             if (f) {
-              setViewObject({ ...f, type: "FRIEND" });
-              prevQuery.current = "";
-              mesNo.current = 0;
+              tmpNewViewObject = { ...f, type: "FRIEND" };
             }
           } else {
             const g = groupList.find((e) => e._id === id);
             if (g) {
-              setViewObject({ ...g, type: "GROUP" });
-              prevQuery.current = "";
-              mesNo.current = 0;
+              tmpNewViewObject = { ...g, type: "FRIEND" };
             }
+          }
+
+          if (tmpNewViewObject?._id) {
+            updateMessageNumber(userMessages, tmpNewViewObject._id);
+            prevQueryLimit.current = false;
+
+            setViewObject(tmpNewViewObject);
           }
         },
       };
     },
-    [friendList, groupList, viewObject]
+    [friendList, groupList, viewObject, userMessages]
   );
+
+  function updateMessageNumber(messages: MessageType[], id: string) {
+    let messagesExchanged = 0;
+    for (const message of messages) {
+      if (
+        message.senderId === id ||
+        message.receiverId === id ||
+        message.groupId === id
+      ) {
+        ++messagesExchanged;
+      }
+    }
+
+    mesNo.current = messagesExchanged;
+  }
 
   return (
     <div
@@ -132,6 +153,7 @@ const ChatPage = forwardRef<ChatHandle, object>((_, ref) => {
       <MessageSection
         viewObject={viewObject}
         requestPrevMessages={requestPrevMessages}
+        onNewMessage={props.onNewMessage}
       />
     </div>
   );

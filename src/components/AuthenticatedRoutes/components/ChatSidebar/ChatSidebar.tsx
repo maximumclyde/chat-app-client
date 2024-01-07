@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, forwardRef, useImperativeHandle } from "react";
 import { useSelector } from "react-redux";
 import { Input, Card, Avatar, Badge } from "antd";
 
@@ -12,19 +12,25 @@ type SidebarProps = {
   onChatSelect: (id: string, type: IndicatorType) => any;
 };
 
+type NewMessageType = {
+  [key: string]: number;
+};
+
+export type SidebarHandle = {
+  onNewMessage: (id: string) => void;
+};
+
 const { Meta } = Card;
 
-function ChatSidebar(props: SidebarProps) {
+const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
   const { preferences } = useSelector(
     (state: GlobalStoreType) => state.preferences
-  );
-  const userMessages = useSelector(
-    (state: GlobalStoreType) => state.userMessages
   );
 
   const friendList = useSelector((state: GlobalStoreType) => state.friendList);
   const groupList = useSelector((state: GlobalStoreType) => state.groupList);
   const [searchFilter, setSearchFilter] = useState("");
+  const [newMessages, setNewMessages] = useState<NewMessageType>({});
 
   const list = useMemo(() => {
     const l = [];
@@ -49,27 +55,33 @@ function ChatSidebar(props: SidebarProps) {
     return l;
   }, [friendList, groupList]);
 
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        onNewMessage(id: string) {
+          setNewMessages((prev) => {
+            const tmp = { ...prev };
+            tmp[id] = (tmp?.[id] || 0) + 1;
+            return tmp;
+          });
+        },
+      };
+    },
+    []
+  );
+
   function searchHandler(e: React.ChangeEvent<HTMLInputElement>): void {
     setSearchFilter(e.target.value);
   }
 
-  function getMessageNumber(id: string, type: IndicatorType): number {
-    let count = 0;
-    if (type === "FRIEND") {
-      for (const message of userMessages) {
-        if (message.senderId === id || message?.receiverId === id) {
-          ++count;
-        }
-      }
-    } else {
-      for (const message of userMessages) {
-        if (message.groupId === id) {
-          ++count;
-        }
-      }
-    }
-
-    return count;
+  function onUserSelect(id: string, type: IndicatorType) {
+    props.onChatSelect(id, type);
+    setNewMessages((prev) => {
+      const tmp = { ...prev };
+      tmp[id] = 0;
+      return tmp;
+    });
   }
 
   return (
@@ -99,7 +111,7 @@ function ChatSidebar(props: SidebarProps) {
           }
 
           const type = e.type as IndicatorType;
-          const count = getMessageNumber(e.id, type);
+          const count = newMessages?.[e.id] || 0;
 
           return (
             <div
@@ -107,7 +119,7 @@ function ChatSidebar(props: SidebarProps) {
               id={e.id}
               key={e.id}
               onClick={() => {
-                props.onChatSelect(e.id, type);
+                onUserSelect(e.id, type);
               }}
             >
               <Meta
@@ -125,6 +137,6 @@ function ChatSidebar(props: SidebarProps) {
       </div>
     </div>
   );
-}
+});
 
 export default ChatSidebar;
