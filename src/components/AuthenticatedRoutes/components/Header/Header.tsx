@@ -1,13 +1,11 @@
-import { useState, useEffect, Fragment, useRef, useCallback } from "react";
+import { useState, useEffect, Fragment, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Popover, Avatar, Badge, notification, Tooltip } from "antd";
+import { Avatar, Badge, notification, Tooltip } from "antd";
 import axios from "axios";
 import { SettingOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 
 import Settings from "../../../Settings/Settings";
-import { ProfileCard } from "..";
-import { RequestsListCard, UsersSearch, FindUsersModal } from "./components";
-import { ProfileHandlerType } from "../ProfileCard/ProfileCard";
+import { FindUsersModal } from "./components";
 import { GlobalStoreType, FriendType } from "@types";
 import socket from "@socket";
 import { toArrayBuffer } from "@utils";
@@ -35,8 +33,6 @@ function Header() {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [usersModalOpen, setUsersModalOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
-
-  const profileCardRef = useRef<ProfileHandlerType>(null);
 
   const handleSocketHeaderRequests = useCallback(
     (event: MessageEvent<string>) => {
@@ -103,38 +99,12 @@ function Header() {
         }`}
       >
         <div className="header-left-section header-section">
-          {/* <Popover
-            title={null}
-            content={<ProfileCard ref={profileCardRef} />}
-            placement="bottom"
-            trigger={["click"]}
-            overlayClassName={`profile-card-popover${
-              preferences.theme === "dark" ? " profile-popover-dark" : ""
-            }`}
-            onOpenChange={(open) => {
-              if (!open) {
-                if (profileCardRef?.current) {
-                  setTimeout(() => {
-                    profileCardRef.current?.resetStates();
-                  }, 300);
-                }
-              }
-            }}
-          > */}
           <div className="user-name-container">
             <Avatar src={authenticatedUser?.avatar} alt="" shape="circle" />
             <b className="user-name-text">{authenticatedUser.userName}</b>
           </div>
-          {/* </Popover> */}
-          {/* <UsersSearch /> */}
         </div>
         <div className="header-right-section header-section">
-          {/* <Popover
-            title={null}
-            content={<RequestsListCard />}
-            placement="bottom"
-            trigger={["click"]}
-          > */}
           <Tooltip title="Search for users">
             <Badge
               color="red"
@@ -149,7 +119,6 @@ function Header() {
               />
             </Badge>
           </Tooltip>
-          {/* </Popover> */}
           <Tooltip title="Settings">
             <SettingOutlined
               style={{ cursor: "pointer" }}

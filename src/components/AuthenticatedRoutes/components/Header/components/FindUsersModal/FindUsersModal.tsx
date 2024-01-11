@@ -130,6 +130,46 @@ function FindUsersModal(props: UserModalProps) {
     }
   }
 
+  function updateQueryForResult(user: FriendType) {
+    const input = document.getElementById(
+      "search-input"
+    ) as HTMLInputElement | null;
+
+    if (input?.value && user) {
+      const value = input.value;
+      if (
+        user.userName.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      ) {
+        setQueryUsers((prev) => {
+          if (!prev.find(({ _id }) => user._id === _id)) {
+            return [user, ...prev];
+          }
+          return prev;
+        });
+      }
+    }
+  }
+
+  function onRequestHandler(id: string, type: "MAKE" | "REMOVE") {
+    if (type === "MAKE") {
+      setQueryUsers((prev) => prev.filter(({ _id }) => _id !== id));
+    } else {
+      const existingRequest: FriendType | undefined = requestsMade.find(
+        ({ _id }) => id === _id
+      );
+      if (existingRequest) {
+        updateQueryForResult(existingRequest);
+      }
+    }
+  }
+
+  function onResponseHandler(id: string) {
+    const existingUser = requestsList?.find(({ _id }) => _id === id);
+    if (existingUser) {
+      updateQueryForResult(existingUser);
+    }
+  }
+
   const darkMode = preferences.theme === "dark";
 
   return (
@@ -145,8 +185,10 @@ function FindUsersModal(props: UserModalProps) {
     >
       <div className="search-section">
         <Input
+          autoFocus
           allowClear
           className={`search-input ${darkMode ? "dark-antd-input" : ""}`}
+          id="search-input"
           placeholder="Search for users..."
           onChange={(e) => {
             if (!e.target.value) {
@@ -168,7 +210,13 @@ function FindUsersModal(props: UserModalProps) {
       </Divider>
       <div className="requests-section">
         {requestsList?.length ? (
-          requestsList.map((e, i) => <UserPreview user={e} key={`req-${i}`} />)
+          requestsList.map((e, i) => (
+            <UserPreview
+              user={e}
+              key={`req-${i}`}
+              onResponseHandler={onResponseHandler}
+            />
+          ))
         ) : (
           <Empty description="You are no friend requests" />
         )}
@@ -180,7 +228,11 @@ function FindUsersModal(props: UserModalProps) {
       )}
       <div className="results-section">
         {requestsMade.map((e, i) => (
-          <UserPreview user={e} key={`made-${i}`} />
+          <UserPreview
+            user={e}
+            key={`made-${i}`}
+            onRequestHandler={onRequestHandler}
+          />
         ))}
       </div>
       {Boolean(queryUsers?.length) && (
@@ -190,7 +242,11 @@ function FindUsersModal(props: UserModalProps) {
       )}
       <div className="results-section">
         {queryUsers.map((e, i) => (
-          <UserPreview user={e} key={`search-${i}`} />
+          <UserPreview
+            user={e}
+            key={`search-${i}`}
+            onRequestHandler={onRequestHandler}
+          />
         ))}
       </div>
     </InfoModal>

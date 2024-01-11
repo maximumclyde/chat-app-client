@@ -33,9 +33,9 @@
 
     .ant-modal-footer {
       border-radius: 0 0 10px 10px;
-      padding: 1rem 0;
+      padding: 1rem 0.5rem;
       @include flex-space();
-      width: calc(100% - 1rem);
+      width: calc(100%);
     }
   }
 }

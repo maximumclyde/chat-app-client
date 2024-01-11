@@ -1,4 +1,10 @@
-import { useState, useMemo, forwardRef, useImperativeHandle } from "react";
+import {
+  useMemo,
+  useState,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+} from "react";
 import { useSelector } from "react-redux";
 import { Input, Card, Avatar, Badge } from "antd";
 
@@ -32,6 +38,8 @@ const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
   const [searchFilter, setSearchFilter] = useState("");
   const [newMessages, setNewMessages] = useState<NewMessageType>({});
 
+  const { onChatSelect } = props;
+
   const list = useMemo(() => {
     const l = [];
     for (const friend of friendList) {
@@ -39,7 +47,7 @@ const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
         name: friend.userName,
         id: friend._id,
         avatar: friend?.avatar,
-        type: "FRIEND",
+        type: "FRIEND" as IndicatorType,
       });
     }
 
@@ -48,12 +56,24 @@ const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
         name: group.groupName,
         id: group._id,
         avatar: group?.avatar,
-        type: "GROUP",
+        type: "GROUP" as IndicatorType,
       });
     }
 
     return l;
   }, [friendList, groupList]);
+
+  const onUserSelect = useCallback(
+    (id: string, type: IndicatorType) => {
+      onChatSelect(id, type);
+      setNewMessages((prev) => {
+        const tmp = { ...prev };
+        tmp[id] = 0;
+        return tmp;
+      });
+    },
+    [onChatSelect]
+  );
 
   useImperativeHandle(
     ref,
@@ -66,22 +86,18 @@ const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
             return tmp;
           });
         },
+        selectFirstElement() {
+          if (list.length) {
+            onUserSelect(list[0].id, list[0].type);
+          }
+        },
       };
     },
-    []
+    [list, onUserSelect]
   );
 
   function searchHandler(e: React.ChangeEvent<HTMLInputElement>): void {
     setSearchFilter(e.target.value);
-  }
-
-  function onUserSelect(id: string, type: IndicatorType) {
-    props.onChatSelect(id, type);
-    setNewMessages((prev) => {
-      const tmp = { ...prev };
-      tmp[id] = 0;
-      return tmp;
-    });
   }
 
   return (
@@ -110,7 +126,7 @@ const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
             return [];
           }
 
-          const type = e.type as IndicatorType;
+          const type = e.type;
           const count = newMessages?.[e.id] || 0;
 
           return (
@@ -126,7 +142,7 @@ const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
                 avatar={<Avatar src={e.avatar} shape="circle" />}
                 title={
                   <div className="sidebar-option-name">
-                    <span>{e.name}</span>
+                    <b>{e.name}</b>
                     {count ? <Badge count={count} color="red" /> : null}
                   </div>
                 }

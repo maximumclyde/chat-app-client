@@ -1,16 +1,27 @@
+import { useState, Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Card, Avatar, Tooltip, message } from "antd";
 import axios from "axios";
 import { StopOutlined } from "@ant-design/icons";
 
-import { StyledButton } from "@ui-components";
+import { StyledButton, InfoModal } from "@ui-components";
 import { FriendType, GlobalStoreType, UserType } from "@types";
-import { userActions, friendListActions } from "@store-actions";
+import {
+  userActions,
+  friendListActions,
+  userMessageActions,
+} from "@store-actions";
 
 import "./UserPreview.scss";
 
+type ActionType = "MAKE" | "REMOVE";
+
+type ConfirmationType = "UNFRIEND" | "BLOCK";
+
 type UserPreviewProps = {
   user: FriendType;
+  onRequestHandler?: (id: string, type: ActionType) => any;
+  onResponseHandler?: (id: string) => any;
 };
 
 function UserPreview(props: UserPreviewProps) {
@@ -20,9 +31,16 @@ function UserPreview(props: UserPreviewProps) {
   const authenticatedUser = useSelector(
     (state: GlobalStoreType) => state.authenticatedUser
   );
+
+  const [confirmation, setConfirmation] = useState<ConfirmationType>();
+
   const dispatch = useDispatch();
 
-  const { user } = props;
+  const {
+    user,
+    onRequestHandler = () => {},
+    onResponseHandler = () => {},
+  } = props;
   const darkMode = preferences.theme === "dark";
 
   const isFriend = authenticatedUser.friendList.includes(user?._id);
@@ -49,10 +67,12 @@ function UserPreview(props: UserPreviewProps) {
             requestsMade: data?.requestsMade,
           })
         );
+        const type: ActionType = path === "request" ? "MAKE" : "REMOVE";
+        onRequestHandler(user._id, type);
       })
       .catch((err) => {
         void message.error({
-          content: "Something went wrong while making request",
+          content: "Something went wrong while processing request",
           key: "requestError",
         });
         console.log("Error making request: ", err);
@@ -73,6 +93,8 @@ function UserPreview(props: UserPreviewProps) {
         if (path === "accept") {
           dispatch(friendListActions.addFriend(user));
         }
+
+        onResponseHandler(user._id);
       })
       .catch((err) => {
         void message.error({
@@ -83,9 +105,54 @@ function UserPreview(props: UserPreviewProps) {
       });
   }
 
-  async function blockHandler() {}
+  async function blockHandler() {
+    await axios
+      .post<UserType>(`/block/${user._id}`)
+      .then(({ data }) => {
+        dispatch(
+          userActions.updateUserProperties({
+            friendList: data.friendList,
+            friendRequests: data.friendRequests,
+            requestsMade: data.requestsMade,
+            userBlock: data.userBlock,
+            blockedBy: data.blockedBy,
+          })
+        );
 
-  async function friendRemove() {}
+        dispatch(friendListActions.removeFriend(user._id));
+        dispatch(userMessageActions.removeUserMessages(user._id));
+      })
+      .catch((err) => {
+        void message.error({
+          content: `Something went wrong while trying to block ${user.userName}`,
+          key: "blockError",
+        });
+        console.log("Error blocking user: ", err);
+      });
+  }
+
+  async function friendRemove() {
+    await axios
+      .post<UserType>(`/users/unfriend/${user._id}`)
+      .then(({ data }) => {
+        if (user?.avatar) {
+          URL.revokeObjectURL(user?.avatar);
+        }
+
+        dispatch(
+          userActions.updateUserProperties({ friendList: data?.friendList })
+        );
+        dispatch(friendListActions.removeFriend(user._id));
+        dispatch(userMessageActions.removeUserMessages(user._id));
+      })
+      .catch((err) => {
+        void message.error({
+          content: "Something went wrong while trying to unfriend",
+          key: "unfriendError",
+        });
+        console.log("Error unfriending user: ", err);
+      });
+  }
 
   function clickHandler() {
     switch (mainActionText) {
@@ -99,51 +166,75 @@ function UserPreview(props: UserPreviewProps) {
         void acceptAction("decline");
         break;
       default:
-        void friendRemove();
+        setConfirmation("UNFRIEND");
     }
   }
 
   return (
-    <div
-      className={`user-preview-container ${
-        darkMode ? "user-preview-dark" : ""
-      }`}
-    >
-      <Card.Meta
-        {...{
-          avatar: <Avatar src={user?.avatar || undefined} alt="" />,
-          title: user?.userName,
-        }}
-      />
-      <div className="actions-container">
-        {hasRequested && (
-          <StyledButton
-            text="Accept"
-            onClick={() => {
-              void acceptAction("accept");
-            }}
-          />
-        )}
-        <StyledButton
+    <Fragment>
+      <div
+        className={`user-preview-container ${
+          darkMode ? "user-preview-dark" : ""
+        }`}
+      >
+        <Card.Meta
           {...{
-            text: mainActionText,
-            type: negativeAction ? "cancel" : "confirm",
-            onClick() {
-              clickHandler();
-            },
+            avatar: <Avatar src={user?.avatar || undefined} alt="" />,
+            title: user?.userName,
           }}
         />
-        <Tooltip title="Block user" trigger={["hover"]}>
+        <div className="actions-container">
+          {hasRequested && (
+            <StyledButton
+              text="Accept"
+              onClick={() => {
+                void acceptAction("accept");
+              }}
+            />
+          )}
           <StyledButton
-            text={<StopOutlined />}
-            type="cancel"
-            onClick={() => {
-              void blockHandler();
+            {...{
+              text: mainActionText,
+              type: negativeAction ? "cancel" : "confirm",
+              onClick() {
+                clickHandler();
+              },
             }}
           />
-        </Tooltip>
+          <Tooltip title="Block user" trigger={["hover"]}>
+            <StyledButton
+              text={<StopOutlined />}
+              type="cancel"
+              onClick={() => {
+                setConfirmation("BLOCK");
+              }}
+            />
+          </Tooltip>
+        </div>
       </div>
-    </div>
+      {Boolean(confirmation) && (
+        <InfoModal
+          {...{
+            open: Boolean(confirmation),
+            onCancel() {
+              setConfirmation(undefined);
+            },
+            title: "Confirmation",
+            onConfirm() {
+              if (confirmation === "UNFRIEND") {
+                void friendRemove();
+              } else {
+                void blockHandler();
+              }
+              setConfirmation(undefined);
+            },
+          }}
+        >
+          Are you sure you want to {confirmation?.toLocaleLowerCase()}{" "}
+          {user.userName}?
+        </InfoModal>
+      )}
+    </Fragment>
   );
 }
 

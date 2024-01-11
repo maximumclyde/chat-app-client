@@ -18,6 +18,7 @@ import "./ChatPage.scss";
 
 export type ChatHandle = {
   changeChatView: (id: string, type: "GROUP" | "FRIEND") => any;
+  removeLiveChatView: (id: string) => any;
 };
 
 type ViewObjectType = Partial<
@@ -93,6 +94,17 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
     }
   }, [viewObject, userMessages]);
 
+  useEffect(() => {
+    if (viewObject?._id) {
+      if (
+        !groupList.find(({ _id }) => _id === viewObject?._id) &&
+        !friendList.find(({ _id }) => _id === viewObject?._id)
+      ) {
+        setViewObject(undefined);
+      }
+    }
+  }, [groupList, friendList, viewObject?._id]);
+
   useImperativeHandle(
     ref,
     () => {
@@ -119,8 +131,13 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
           if (tmpNewViewObject?._id) {
             updateMessageNumber(userMessages, tmpNewViewObject._id);
             prevQueryLimit.current = false;
+          }
 
-            setViewObject(tmpNewViewObject);
+          setViewObject(tmpNewViewObject);
+        },
+        removeLiveChatView(id) {
+          if (viewObject?._id === id) {
+            setViewObject(undefined);
           }
         },
       };

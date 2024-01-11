@@ -29,10 +29,11 @@ const friendList = createSlice({
       }
       return tmp;
     },
-    removeFriend(state, action: PayloadAction<FriendType>) {
+    removeFriend(state, action: PayloadAction<string>) {
       const tmp = [...state];
-      const userIndex = tmp.findIndex((el) => el?._id === action.payload?._id);
+      const userIndex = tmp.findIndex((el) => el?._id === action.payload);
       if (userIndex > -1) {
+        URL.revokeObjectURL(tmp[userIndex]?.["avatar"] || "");
         tmp.splice(userIndex, 1);
         return tmp;
       }
