@@ -5,7 +5,8 @@
   @include light-body-style;
 
   height: calc(100dvh - 56px);
-  width: 100%;
+  width: -moz-fill-available;
+  width: -webkit-fill-available;
   overflow-x: hidden;
   overflow-y: auto;
 }

@@ -1,0 +1,31 @@
+@import "/src/index.scss";
+
+.message-section-container {
+  height: calc(100% - 50px);
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  @include flex(flex-end, center, column);
+  background-color: $light-background;
+
+  .message-list-container {
+    height: calc(100% - 50px);
+    width: 100%;
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    gap: 10px;
+
+    .messages {
+      height: fit-content;
+      width: 98%;
+      padding: 1%;
+      @include flex(flex-end, center, column);
+      gap: 10px;
+    }
+  }
+}
+
+.message-section-container.message-section-dark {
+  background-color: $dark-background;
+}

@@ -1,15 +1,26 @@
-import { useState, Fragment, useRef } from "react";
-import { useSelector } from "react-redux";
-import { Input, AutoComplete, message, Popover, Avatar } from "antd";
-import { SettingOutlined } from "@ant-design/icons";
+import { useState, useEffect, Fragment, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Avatar, Badge, notification, Tooltip } from "antd";
 import axios from "axios";
+import { SettingOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 
 import Settings from "../../../Settings/Settings";
-import { ProfileCard } from "..";
-import { ProfileHandlerType } from "../ProfileCard/ProfileCard";
-import { FriendType, GlobalStoreType } from "@types";
+import { FindUsersModal } from "./components";
+import { GlobalStoreType, FriendType } from "@types";
+import socket from "@socket";
+import { toArrayBuffer } from "@utils";
+import { userActions, friendListActions } from "@store-actions";
 
 import "./Header.scss";
+
+type RequestBodyType = {
+  _id: string;
+};
+
+type SocketRequestType = {
+  request: string;
+  body: RequestBodyType;
+};
 
 function Header() {
   const { preferences } = useSelector(
@@ -19,31 +30,66 @@ function Header() {
     (state: GlobalStoreType) => state.authenticatedUser
   );
 
-  const [queryUsers, setQueryUsers] = useState<FriendType[]>([]);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const [usersModalOpen, setUsersModalOpen] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
-  const profileCardRef = useRef<ProfileHandlerType>(null);
+  const handleSocketHeaderRequests = useCallback(
+    (event: MessageEvent<string>) => {
+      const { request, body } = JSON.parse(event.data) as SocketRequestType;
 
-  async function getUsersQuery(query: string): Promise<void> {
-    void message.loading({
-      content: "Searching...",
-      key: "usersQuery",
-      duration: 0,
-    });
-    try {
-      const usersRes = await axios.post<FriendType[]>("/userQuery", {
-        query,
-      });
-      message.destroy("usersQuery");
-      setQueryUsers(usersRes.data);
-    } catch (err) {
-      console.log("Error getting users: ", err);
-      void message.error({
-        content: "Something went wrong while getting users",
-        key: "usersQuery",
-      });
+      if (request === "friend-request") {
+        dispatch(
+          userActions.addIdToUserProperties({ friendRequests: body._id })
+        );
+      } else if (request === "request-removed") {
+        dispatch(
+          userActions.removeIdFromUserProperties({ friendRequests: body._id })
+        );
+      } else if (request === "request-accept") {
+        dispatch(
+          userActions.removeIdFromUserProperties({ requestsMade: body._id })
+        );
+        dispatch(userActions.addIdToUserProperties({ friendList: body._id }));
+
+        axios
+          .get<FriendType>(`/users/${body._id}`)
+          .then((res) => {
+            let avatar = undefined;
+            if (res.data?.avatar) {
+              avatar = URL.createObjectURL(toArrayBuffer(res.data.avatar));
+            }
+            dispatch(friendListActions.addFriend({ ...res.data, avatar }));
+            notification.success({
+              message: (
+                <span>
+                  <b>{res.data.userName}&nbsp;</b>has accepted your request!
+                </span>
+              ),
+              duration: 3,
+              placement: "bottomLeft",
+            });
+          })
+          .catch((err) => {
+            console.log("Error getting friend: ", err);
+          });
+      } else if (request === "request-decline") {
+        dispatch(
+          userActions.removeIdFromUserProperties({ requestsMade: body._id })
+        );
+      }
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.addEventListener("message", handleSocketHeaderRequests);
     }
-  }
+    return () => {
+      socket.removeEventListener("message", handleSocketHeaderRequests);
+    };
+  }, [handleSocketHeaderRequests]);
 
   return (
     <Fragment>
@@ -53,64 +99,46 @@ function Header() {
         }`}
       >
         <div className="header-left-section header-section">
-          <Popover
-            title={null}
-            content={<ProfileCard ref={profileCardRef} />}
-            placement="bottom"
-            trigger={["click"]}
-            overlayClassName={`profile-card-popover${
-              preferences.theme === "dark" ? " profile-popover-dark" : ""
-            }`}
-            onOpenChange={(open) => {
-              if (!open) {
-                if (profileCardRef?.current) {
-                  setTimeout(() => {
-                    profileCardRef.current?.resetStates();
-                  }, 300);
-                }
-              }
-            }}
-          >
-            <div className="user-name-container">
-              <Avatar src={authenticatedUser?.avatar} alt="" shape="circle" />
-              <span className="user-name-text">
-                {authenticatedUser.userName}
-              </span>
-            </div>
-          </Popover>
-          <AutoComplete
-            {...{
-              popupMatchSelectWidth: false,
-              options: queryUsers.map((e) => ({
-                label: e.userName,
-                value: e.userName,
-              })),
-            }}
-          >
-            <Input.Search
-              enterButton
-              allowClear
-              placeholder="Search for users..."
-              onChange={(val) => {
-                if (!val.target.value) {
-                  setQueryUsers([]);
-                }
-              }}
-              onSearch={(val) => {
-                void getUsersQuery(val);
-              }}
-            />
-          </AutoComplete>
+          <div className="user-name-container">
+            <Avatar src={authenticatedUser?.avatar} alt="" shape="circle" />
+            <b className="user-name-text">{authenticatedUser.userName}</b>
+          </div>
         </div>
         <div className="header-right-section header-section">
-          <SettingOutlined
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-              setSettingsOpen(true);
-            }}
-          />
+          <Tooltip title="Search for users">
+            <Badge
+              color="red"
+              count={authenticatedUser?.friendRequests?.length}
+              size="small"
+            >
+              <UsergroupAddOutlined
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setUsersModalOpen(true);
+                }}
+              />
+            </Badge>
+          </Tooltip>
+          <Tooltip title="Settings">
+            <SettingOutlined
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setSettingsOpen(true);
+              }}
+            />
+          </Tooltip>
         </div>
       </div>
+      {usersModalOpen && (
+        <FindUsersModal
+          {...{
+            open: usersModalOpen,
+            onCancel() {
+              setUsersModalOpen(false);
+            },
+          }}
+        />
+      )}
       {settingsOpen && (
         <Settings
           open={settingsOpen}

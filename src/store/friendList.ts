@@ -5,7 +5,7 @@ export type FriendType = {
   userName: string;
   userEmail: string;
   friendList: string[];
-  avatar?: Blob;
+  avatar?: string;
 };
 
 const initialListState = [] as FriendType[];
@@ -14,23 +14,28 @@ const friendList = createSlice({
   name: "friendList",
   initialState: initialListState,
   reducers: {
+    setupFriends(_, action: PayloadAction<FriendType[]>) {
+      return [...action.payload];
+    },
     addFriend(state, action: PayloadAction<FriendType>) {
-      state.push(action.payload);
-      return state;
+      const tmp = [...state];
+      tmp.push(action.payload);
+      return tmp;
     },
     addFriends(state, action: PayloadAction<FriendType[]>) {
+      const tmp = [...state];
       for (let i = 0; i < action.payload.length; i++) {
-        state.push(action.payload[i]);
+        tmp.push(action.payload[i]);
       }
-      return state;
+      return tmp;
     },
-    removeFriend(state, action: PayloadAction<FriendType>) {
-      const userIndex = state.findIndex(
-        (el) => el?._id === action.payload?._id
-      );
+    removeFriend(state, action: PayloadAction<string>) {
+      const tmp = [...state];
+      const userIndex = tmp.findIndex((el) => el?._id === action.payload);
       if (userIndex > -1) {
-        state.splice(userIndex, 1);
-        return state;
+        URL.revokeObjectURL(tmp[userIndex]?.["avatar"] || "");
+        tmp.splice(userIndex, 1);
+        return tmp;
       }
     },
   },

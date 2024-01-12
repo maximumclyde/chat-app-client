@@ -2,11 +2,11 @@ function debounce<Params extends any[]>(
   func: (...args: Params) => any,
   timeout = 100
 ) {
+  let timer: number | undefined = undefined;
   return function (...args: Params) {
-    let timer: ReturnType<typeof setTimeout> = 0;
     clearTimeout(timer);
     timer = setTimeout(() => {
-      func.apply(args);
+      func(...args);
     }, timeout);
   };
 }

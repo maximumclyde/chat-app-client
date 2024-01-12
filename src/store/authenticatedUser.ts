@@ -15,6 +15,23 @@ export type UserType = {
   avatar?: string;
 };
 
+type UpdateActionType = Partial<UserType>;
+
+type UserArrayActionType = Omit<
+  UpdateActionType,
+  "_id" | "userName" | "userEmail" | "createdAt" | "avatar"
+>;
+
+type ArrayPayloadProperty = {
+  friendList?: string;
+  friendRequests?: string;
+  requestsMade?: string;
+  groupList?: string;
+  userBlock?: string;
+  groupBlock?: string;
+  blockedBy?: string;
+};
+
 const initUser = {} as UserType;
 
 const authenticatedUser = createSlice({
@@ -24,6 +41,45 @@ const authenticatedUser = createSlice({
     setAuthenticatedUser(_, action: PayloadAction<UserType>) {
       return action.payload;
     },
+    updateUserProperties(
+      state: UserType,
+      action: PayloadAction<UpdateActionType>
+    ) {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    },
+    addIdToUserProperties(
+      state: UserType,
+      action: PayloadAction<ArrayPayloadProperty>
+    ) {
+      const tmp = {} as UserArrayActionType;
+      for (const property in action.payload) {
+        const p = property as keyof UserArrayActionType;
+        tmp[p] = [...state[p], action.payload?.[p] || ""];
+      }
+
+      return {
+        ...state,
+        ...tmp,
+      };
+    },
+    removeIdFromUserProperties(
+      state: UserType,
+      action: PayloadAction<ArrayPayloadProperty>
+    ) {
+      const tmp = {} as UserArrayActionType;
+      for (const property in action.payload) {
+        const p = property as keyof UserArrayActionType;
+        tmp[p] = state[p].filter((e) => e !== action.payload[p]);
+      }
+
+      return {
+        ...state,
+        ...tmp,
+      };
+    },
     userLogout() {
       localStorage.removeItem("authenticationToken");
       return {} as UserType;
@@ -31,6 +87,6 @@ const authenticatedUser = createSlice({
   },
 });
 
-export const authenticatedUserActions = authenticatedUser.actions;
+export const userActions = authenticatedUser.actions;
 
 export default authenticatedUser;

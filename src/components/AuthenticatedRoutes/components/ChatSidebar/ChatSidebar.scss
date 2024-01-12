@@ -1,0 +1,72 @@
+@import "/src/index.scss";
+
+.main-sidebar-container {
+  height: calc(100vh - 56px);
+  width: 300px;
+  @include flex-ss(column);
+  @include light-header-style();
+  border-right: 1px solid $light-border;
+
+  .sidebar-search {
+    height: 35px;
+    width: 100%;
+    @include flex-cc();
+    border-radius: 0;
+  }
+
+  .sidebar-list {
+    height: calc(100% - 35px);
+    width: 100%;
+    @include flex-ss(column);
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    .sidebar-option {
+      height: 50px;
+      width: calc(100% - 5px);
+      padding-left: 5px;
+      @include flex-sc();
+      border-bottom: 1px solid $light-border;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      .ant-card-meta {
+        width: 100%;
+        height: 100%;
+        @include flex-sc();
+        gap: 10px;
+
+        .ant-card-meta-detail {
+          width: 100%;
+          padding-right: 1rem;
+        }
+        .sidebar-option-name {
+          @include flex-space();
+          width: -moz-fill-available;
+          width: -webkit-fill-available;
+        }
+      }
+    }
+
+    .sidebar-option.sidebar-option-active {
+      background-color: $light-active;
+    }
+  }
+}
+
+.main-sidebar-container.sidebar-dark {
+  @include dark-header-style();
+  border-right: 1px solid $dark-border;
+
+  .sidebar-list {
+    .sidebar-option {
+      border-bottom: 1px solid $dark-border;
+    }
+
+    .sidebar-option.sidebar-option-active {
+      background-color: $dark-active;
+    }
+  }
+}

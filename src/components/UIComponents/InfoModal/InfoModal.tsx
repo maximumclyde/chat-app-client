@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
+import { useSelector } from "react-redux";
 import { Modal, ModalProps } from "antd";
 import { StyledButton } from "@ui-components";
+import { GlobalStoreType } from "@types";
 
 import "./InfoModal.scss";
 
@@ -16,21 +18,24 @@ type InfoBaseProps = {
   closeIcon?: ReactNode | null;
   bodyClass?: string;
   title?: ReactNode;
-  theme?: "dark" | "light";
 };
 
 export type InfoModalProps = Partial<ModalProps> & InfoBaseProps;
 
 function InfoModal(props: InfoModalProps) {
+  const { preferences } = useSelector(
+    (state: GlobalStoreType) => state.preferences
+  );
+
   const {
-    children,
+    children = <></>,
     className = "",
     wrapClassName = "info-modal-wrap",
-    bodyClass = "info-modal-body",
     centered = true,
     closeIcon = null,
     onCancel = () => {},
     onConfirm = () => {},
+    closable = true,
     ...rest
   } = props;
 
@@ -56,8 +61,11 @@ function InfoModal(props: InfoModalProps) {
   return (
     <Modal
       {...{
-        className: `${className} info-modal-container`,
+        className: `${className} info-modal-container ${
+          preferences?.theme === "dark" ? "info-modal-dark" : "info-modal-light"
+        }`,
         wrapClassName,
+        closable,
         centered,
         footer: props?.footer
           ? props?.footer
@@ -70,7 +78,7 @@ function InfoModal(props: InfoModalProps) {
         ...rest,
       }}
     >
-      <div className={bodyClass}>{children}</div>
+      {children}
     </Modal>
   );
 }

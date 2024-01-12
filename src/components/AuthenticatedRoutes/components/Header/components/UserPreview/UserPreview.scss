@@ -1,0 +1,33 @@
+@import "/src/index.scss";
+
+.user-preview-container {
+  width: 100%;
+  @include flex-space();
+  gap: 1rem;
+  padding: 10px 3px;
+  border-top: 1px solid;
+  border-color: $light-border;
+
+  &:first-child {
+    border: 0;
+  }
+
+  .ant-card-meta {
+    @include flex-cc(row);
+    cursor: default;
+    gap: 10px;
+    .ant-card-meta-title {
+      font-size: bolder;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .actions-container {
+    @include flex-cc();
+    gap: 10px;
+  }
+}
+
+.user-preview-container.user-preview-dark {
+  border-color: $dark-border;
+}

@@ -10,10 +10,10 @@
 
   .header-section {
     @include flex-sc;
-    gap: 1rem;
+    gap: 2rem;
 
     .user-name-container {
-      cursor: pointer;
+      cursor: default;
       @include flex-cc();
       gap: 10px;
     }
@@ -36,17 +36,9 @@
 
   .header-section {
     color: $white;
-    .ant-input-affix-wrapper {
-      background-color: $dark-background;
-      color: $white;
 
-      input {
-        background-color: inherit;
-        color: inherit;
-        &::placeholder {
-          color: #f9f9f9aa;
-        }
-      }
+    .ant-badge {
+      color: inherit;
     }
   }
 }

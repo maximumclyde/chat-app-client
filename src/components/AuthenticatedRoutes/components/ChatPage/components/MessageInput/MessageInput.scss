@@ -1,0 +1,39 @@
+@import "/src/index.scss";
+
+.message-input-container {
+  height: 50px;
+  width: 98.5%;
+  @include flex-cc();
+  gap: 10px;
+
+  .ant-form {
+    width: calc(100% - 50px);
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  }
+
+  .message-input {
+    border-radius: 8px;
+  }
+
+  .ant-input-suffix {
+    cursor: pointer;
+  }
+
+  .send-container {
+    height: 40px;
+    width: 40px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: greenyellow;
+    @include flex-cc();
+    cursor: pointer;
+  }
+}
+
+.message-input-container.message-input-dark {
+  .send-container {
+    color: $dark-background;
+  }
+}

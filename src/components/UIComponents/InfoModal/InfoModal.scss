@@ -1,36 +1,93 @@
 @import "/src/index.scss";
 
-@mixin darkTheme-Colors {
-}
+.info-modal-container {
+  height: fit-content !important;
+  width: fit-content !important;
+  border-radius: 10px;
 
-@mixin lightTheme-Colors {
-  color: #0f0f0f;
-}
+  .ant-modal-content {
+    height: fit-content;
+    width: fit-content;
+    min-width: 250px;
+    max-width: 98vw;
+    min-height: 150px;
+    max-height: 98vh;
+    overflow: hidden;
+    padding: 0;
+    border-radius: 10px;
 
-.info-modal-dark {
-  .ant-modal-header {
-    .ant-modal-title {
-      @include darkTheme-Colors;
+    .ant-modal-header {
+      border-radius: 10px 10px 0 0;
+      @include flex-space();
+      height: 45px;
+      padding: 0 1rem;
+    }
+
+    .ant-modal-body {
+      padding: 1rem;
+    }
+
+    .ant-modal-close {
+      transform: translateY(-20%);
+    }
+
+    .ant-modal-footer {
+      border-radius: 0 0 10px 10px;
+      padding: 1rem 0.5rem;
+      @include flex-space();
+      width: calc(100%);
     }
   }
+}
+
+.info-modal-container.info-modal-dark {
+  box-shadow: 0 0 4px 0.5px rgba(255, 255, 255, 0.15);
   .ant-modal-content {
-    @include darkTheme-Colors;
-  }
-  .ant-modal-footer {
-    @include darkTheme-Colors;
+    @include dark-body-style();
+
+    .ant-modal-header {
+      @include dark-header-style();
+      .ant-modal-title {
+        @include dark-header-style();
+      }
+    }
+
+    .ant-modal-close {
+      color: $dark-color;
+    }
+
+    .ant-modal-body {
+      color: $dark-color;
+    }
+
+    .ant-modal-footer {
+      @include dark-body-style();
+    }
   }
 }
 
-.info-modal-light {
-  .ant-modal-header {
-    .ant-modal-title {
-      @include lightTheme-Colors;
-    }
-  }
+.info-modal-container.info-modal-light {
+  box-shadow: 0 0 4px 0.5px rgba(0, 0, 0, 0.15);
   .ant-modal-content {
-    @include lightTheme-Colors();
-  }
-  .ant-modal-footer {
-    @include lightTheme-Colors();
+    @include light-body-style();
+
+    .ant-modal-header {
+      @include light-header-style();
+      .ant-modal-title {
+        @include light-header-style();
+      }
+    }
+
+    .ant-modal-close {
+      color: $light-color;
+    }
+
+    .ant-modal-body {
+      color: $light-color;
+    }
+
+    .ant-modal-footer {
+      @include light-body-style();
+    }
   }
 }

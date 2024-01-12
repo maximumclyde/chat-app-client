@@ -7,7 +7,7 @@ export type StyledButtonProps = {
   className?: string;
   style?: CSSProperties;
   icon?: ReactNode;
-  text: string;
+  text: React.ReactNode;
   type?: "confirm" | "cancel" | "default";
   onClick?: () => any;
 };
