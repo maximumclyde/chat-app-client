@@ -107,7 +107,7 @@ function UserPreview(props: UserPreviewProps) {
 
   async function blockHandler() {
     await axios
-      .post<UserType>(`/block/${user._id}`)
+      .post<UserType>(`/users/block/${user._id}`)
       .then(({ data }) => {
         dispatch(
           userActions.updateUserProperties({
@@ -121,6 +121,7 @@ function UserPreview(props: UserPreviewProps) {
 
         dispatch(friendListActions.removeFriend(user._id));
         dispatch(userMessageActions.removeUserMessages(user._id));
+        onRequestHandler(user._id, "REMOVE");
       })
       .catch((err) => {
         void message.error({

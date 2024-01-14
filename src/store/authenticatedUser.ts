@@ -82,6 +82,7 @@ const authenticatedUser = createSlice({
     },
     userLogout() {
       localStorage.removeItem("authenticationToken");
+      location.replace(`${location.protocol}//${location.host}/`);
       return {} as UserType;
     },
   },

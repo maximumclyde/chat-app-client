@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { useSelector } from "react-redux";
 import { Modal, ModalProps } from "antd";
+
 import { StyledButton } from "@ui-components";
 import { GlobalStoreType } from "@types";
 
@@ -32,7 +33,6 @@ function InfoModal(props: InfoModalProps) {
     className = "",
     wrapClassName = "info-modal-wrap",
     centered = true,
-    closeIcon = null,
     onCancel = () => {},
     onConfirm = () => {},
     closable = true,
@@ -65,14 +65,13 @@ function InfoModal(props: InfoModalProps) {
           preferences?.theme === "dark" ? "info-modal-dark" : "info-modal-light"
         }`,
         wrapClassName,
-        closable,
+        closable: !rest?.title ? false : closable,
         centered,
         footer: props?.footer
           ? props?.footer
           : props?.footer === null
           ? undefined
           : defaultFooter,
-        closeIcon,
         maskClosable: true,
         onCancel,
         ...rest,

@@ -1,3 +1,5 @@
+import { Spin } from "antd";
+
 type LoadingProps = {
   loading: boolean;
   children?: React.ReactNode;
@@ -5,7 +7,7 @@ type LoadingProps = {
 
 function Loading(props: LoadingProps) {
   return props.loading ? (
-    <div>Loading...</div>
+    <Spin size="large" spinning className="global-loading" />
   ) : props?.children ? (
     <>{props?.children}</>
   ) : (

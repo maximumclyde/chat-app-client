@@ -1,0 +1,104 @@
+@use "sass:color";
+@import "/src/index.scss";
+
+.profile-settings {
+  @include flex-ss(column);
+  cursor: default;
+
+  .profile-info-section {
+    @include flex-space(row);
+    width: 100%;
+    gap: 10px;
+
+    .general-info-section {
+      @include flex-sc(row);
+      gap: 10px;
+      width: -moz-fill-available;
+      width: -webkit-fill-available;
+
+      .ant-upload-wrapper,
+      .ant-upload-list,
+      .ant-upload {
+        @include flex-cc();
+        margin: 0;
+        font-size: 0.7rem;
+      }
+
+      .ant-upload-wrapper {
+        @include flex-cc();
+        height: 100px;
+        width: 100px;
+        margin: 0;
+        font-size: 0.7rem;
+      }
+
+      .ant-avatar {
+        @include flex-cc();
+        height: 60px;
+        width: 60px;
+        img {
+          height: 60px;
+          width: 60px;
+        }
+      }
+
+      .name-section {
+        @include flex-ss(column);
+        gap: 5px;
+
+        .user-name {
+          font-size: 1.2rem;
+          font-weight: bolder;
+          letter-spacing: 0.2px;
+        }
+
+        .member-since {
+          font-size: 0.8rem;
+          color: color.adjust($light-color, $alpha: -0.2);
+        }
+      }
+
+      .ant-upload-list-item-actions {
+        a {
+          display: none;
+        }
+      }
+    }
+
+    .save-profile-buttons {
+      @include flex-cc();
+      gap: 10px;
+    }
+  }
+
+  .info-edit-section {
+    @include flex-sc(column);
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.profile-settings-dark {
+  .profile-info-section {
+    .general-info-section {
+      .name-section {
+        .member-since {
+          color: color.adjust($dark-color, $alpha: -0.2);
+        }
+      }
+
+      .ant-upload {
+        color: $dark-color;
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .profile-settings {
+    .profile-info-section {
+      @include flex-ss(column);
+    }
+  }
+}

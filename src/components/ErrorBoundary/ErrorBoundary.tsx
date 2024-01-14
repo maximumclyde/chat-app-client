@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import { Button, Result } from "antd";
 
 type ErrorProps = {
   children: ReactNode;
@@ -33,16 +34,27 @@ class ErrorBoundary extends React.Component<ErrorProps, ErrorState> {
     });
   }
 
+  goHome() {
+    location.replace(`${window.location.protocol}//${window.location.host}/`);
+  }
+
   render() {
     if (this.state.hasError) {
       return (
-        <>
-          <h1>{this.state.error?.name}</h1>
-          <br />
-          <h3>{this.state.error?.message}</h3>
-          <br />
-          <p>{this.state.stack}</p>
-        </>
+        <Result
+          status={"500"}
+          title={this.state.error?.name}
+          subTitle="Looks like something went wrong."
+          extra={
+            <Button
+              onClick={() => {
+                this.goHome();
+              }}
+            >
+              Go back home
+            </Button>
+          }
+        />
       );
     }
     return this.props.children;

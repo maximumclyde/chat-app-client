@@ -120,3 +120,22 @@ $dark-active: #292f2f;
     @include dark-input();
   }
 }
+
+.global-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  @include flex-cc();
+  z-index: 9999;
+}
+
+.ant-result {
+  height: 100vh;
+  @include flex-cc(column);
+
+  .ant-result-icon {
+    margin: unset;
+  }
+}

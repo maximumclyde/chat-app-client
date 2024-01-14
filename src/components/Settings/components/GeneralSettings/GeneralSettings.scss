@@ -1,0 +1,28 @@
+@import "/src/index.scss";
+
+.general-settings {
+  @include flex-ss(column);
+  .ant-form {
+    height: 100%;
+    width: 100%;
+    .ant-col {
+      label {
+        margin-right: 10px;
+
+        &:where(:not(.ant-radio-wrapper)) {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+.general-settings-dark {
+  .ant-form {
+    .ant-col {
+      label {
+        color: $dark-color;
+      }
+    }
+  }
+}

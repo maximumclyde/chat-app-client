@@ -1,13 +1,13 @@
 import { useRef, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-import { Header, ChatSidebar, ChatPage } from "..";
 import { ChatHandle } from "../ChatPage/ChatPage";
+import { Header, ChatSidebar, ChatPage } from "..";
 import { SidebarHandle } from "../ChatSidebar/ChatSidebar";
 import {
   userActions,
-  userMessageActions,
   friendListActions,
+  userMessageActions,
 } from "@store-actions";
 import socket from "@socket";
 
@@ -45,6 +45,12 @@ function AuthenticatedLayout() {
 
       if (request === "blocked") {
         dispatch(userActions.addIdToUserProperties({ blockedBy: body._id }));
+        dispatch(
+          userActions.removeIdFromUserProperties({
+            friendRequests: body._id,
+            requestsMade: body._id,
+          })
+        );
       }
     },
     [dispatch]

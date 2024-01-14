@@ -1,63 +1,73 @@
 @import "/src/index.scss";
 
-.settings-container {
+.settings-component {
   .ant-modal-content {
-    width: 90vw;
-    max-width: 550px;
-    .ant-modal-body {
-      .settings-fields-container {
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 1rem;
-
-        .formField-input-container {
-          width: 100%;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          .ant-row {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            .ant-col {
-              width: fit-content;
-              flex: unset;
-            }
-
-            .ant-form-item-control-input-content {
-              width: fit-content;
-              flex: unset;
-            }
-          }
-        }
-      }
+    .ant-modal-header {
+      margin-bottom: 0;
     }
 
-    .ant-modal-footer {
-      @include flex(flex-end, center);
+    .ant-menu-item {
+      border-radius: 0;
+    }
+
+    .ant-layout-sider-light,
+    .ant-layout-sider-trigger,
+    .ant-menu {
+      @include light-header-style();
+    }
+
+    .ant-menu-item-selected {
+      background-color: $light-active;
+    }
+
+    .ant-modal-body {
+      height: calc(98vh - 45px);
+      max-height: 600px;
+      width: calc(98vw - 2rem);
+      max-width: 900px;
+      padding: 0;
+
+      .ant-layout-has-sider {
+        height: calc(98vh - 45px);
+        max-height: 600px;
+        width: 100%;
+      }
+
+      .ant-layout-sider {
+        height: calc(98vh - 45px);
+        max-height: 600px;
+      }
+
+      .ant-layout-sider-trigger {
+        bottom: unset;
+        border-bottom-left-radius: 10px;
+      }
+
+      .settings-layout-body {
+        height: 100%;
+        padding: 0.5rem;
+        @include light-body-style();
+      }
     }
   }
 }
 
-.settings-container.settings-dark {
+.settings-component-dark {
   .ant-modal-content {
     .ant-modal-body {
-      .ant-col {
-        label {
-          color: $white;
-        }
+      .settings-layout-body {
+        @include dark-body-style();
       }
     }
-  }
-}
 
-@media (max-width: 500px) {
-  .settings-container {
-    .ant-modal-content {
-      height: 98vh;
+    .ant-layout-sider-dark,
+    .ant-layout-sider-trigger,
+    .ant-menu {
+      @include dark-header-style();
+    }
+
+    .ant-menu-item-selected {
+      background-color: $dark-active;
     }
   }
 }
