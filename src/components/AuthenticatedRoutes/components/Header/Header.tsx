@@ -2,10 +2,14 @@ import { useState, useEffect, Fragment, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar, Badge, notification, Tooltip } from "antd";
 import axios from "axios";
-import { SettingOutlined, UsergroupAddOutlined } from "@ant-design/icons";
+import {
+  GlobalOutlined,
+  SettingOutlined,
+  UsergroupAddOutlined,
+} from "@ant-design/icons";
 
 import Settings from "../../../Settings/Settings";
-import { FindUsersModal } from "./components";
+import { FindUsersModal, NewGroupModal } from "./components";
 import { GlobalStoreType, FriendType } from "@types";
 import socket from "@socket";
 import { toArrayBuffer } from "@utils";
@@ -32,6 +36,7 @@ function Header() {
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [usersModalOpen, setUsersModalOpen] = useState<boolean>(false);
+  const [newGroupOpen, setNewGroupOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
 
   const handleSocketHeaderRequests = useCallback(
@@ -105,13 +110,21 @@ function Header() {
           </div>
         </div>
         <div className="header-right-section header-section">
+          <Tooltip title="New Group">
+            <UsergroupAddOutlined
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setNewGroupOpen(true);
+              }}
+            />
+          </Tooltip>
           <Tooltip title="Search for users">
             <Badge
               color="red"
               count={authenticatedUser?.friendRequests?.length}
               size="small"
             >
-              <UsergroupAddOutlined
+              <GlobalOutlined
                 style={{ cursor: "pointer" }}
                 onClick={() => {
                   setUsersModalOpen(true);
@@ -144,6 +157,14 @@ function Header() {
           open={settingsOpen}
           onCancel={() => {
             setSettingsOpen(false);
+          }}
+        />
+      )}
+      {newGroupOpen && (
+        <NewGroupModal
+          open={newGroupOpen}
+          onCancel={() => {
+            setNewGroupOpen(false);
           }}
         />
       )}

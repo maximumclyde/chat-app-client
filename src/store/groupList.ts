@@ -22,6 +22,9 @@ const groupList = createSlice({
     setupGroups(_, action: PayloadAction<GroupType[]>) {
       return action.payload;
     },
+    addGroup(state, action: PayloadAction<GroupType>) {
+      return [...state, action.payload];
+    },
   },
 });
 

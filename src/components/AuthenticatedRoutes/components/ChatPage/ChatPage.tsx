@@ -54,7 +54,7 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
 
     let URI = `/message/${viewObject._id}?messagesExchanged=${mesNo.current}`;
     if (viewObject?.type === "GROUP") {
-      URI = `message/group/${viewObject._id}?messagesExchanged=${mesNo.current}`;
+      URI = `/message/group/${viewObject._id}?messagesExchanged=${mesNo.current}`;
     }
 
     if (prevQueryLimit.current) {
@@ -124,7 +124,7 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
           } else {
             const g = groupList.find((e) => e._id === id);
             if (g) {
-              tmpNewViewObject = { ...g, type: "FRIEND" };
+              tmpNewViewObject = { ...g, type: "GROUP" };
             }
           }
 

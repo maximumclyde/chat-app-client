@@ -22,6 +22,7 @@ type UserPreviewProps = {
   user: FriendType;
   onRequestHandler?: (id: string, type: ActionType) => any;
   onResponseHandler?: (id: string) => any;
+  customAction?: React.ReactNode;
 };
 
 function UserPreview(props: UserPreviewProps) {
@@ -38,6 +39,7 @@ function UserPreview(props: UserPreviewProps) {
 
   const {
     user,
+    customAction,
     onRequestHandler = () => {},
     onResponseHandler = () => {},
   } = props;
@@ -185,32 +187,38 @@ function UserPreview(props: UserPreviewProps) {
           }}
         />
         <div className="actions-container">
-          {hasRequested && (
-            <StyledButton
-              text="Accept"
-              onClick={() => {
-                void acceptAction("accept");
-              }}
-            />
+          {customAction ? (
+            customAction
+          ) : (
+            <Fragment>
+              {hasRequested && (
+                <StyledButton
+                  text="Accept"
+                  onClick={() => {
+                    void acceptAction("accept");
+                  }}
+                />
+              )}
+              <StyledButton
+                {...{
+                  text: mainActionText,
+                  type: negativeAction ? "cancel" : "confirm",
+                  onClick() {
+                    clickHandler();
+                  },
+                }}
+              />
+              <Tooltip title="Block user" trigger={["hover"]}>
+                <StyledButton
+                  text={<StopOutlined />}
+                  type="cancel"
+                  onClick={() => {
+                    setConfirmation("BLOCK");
+                  }}
+                />
+              </Tooltip>
+            </Fragment>
           )}
-          <StyledButton
-            {...{
-              text: mainActionText,
-              type: negativeAction ? "cancel" : "confirm",
-              onClick() {
-                clickHandler();
-              },
-            }}
-          />
-          <Tooltip title="Block user" trigger={["hover"]}>
-            <StyledButton
-              text={<StopOutlined />}
-              type="cancel"
-              onClick={() => {
-                setConfirmation("BLOCK");
-              }}
-            />
-          </Tooltip>
         </div>
       </div>
       {Boolean(confirmation) && (

@@ -90,10 +90,15 @@ function FindUsersModal(props: UserModalProps) {
   useEffect(() => {
     return () => {
       revokeAvatars(queryUsers);
-      revokeAvatars(requestsList);
-      revokeAvatars(requestsMade);
     };
-  }, [queryUsers, requestsList, requestsMade]);
+  }, [queryUsers]);
+
+  useEffect(() => {
+    const input = document.getElementById("search-input") as HTMLInputElement;
+    if (input) {
+      input.focus();
+    }
+  }, []);
 
   function revokeAvatars(users: FriendType[]) {
     for (const user of users) {
@@ -185,7 +190,6 @@ function FindUsersModal(props: UserModalProps) {
     >
       <div className="search-section">
         <Input
-          autoFocus
           allowClear
           className={`search-input ${darkMode ? "dark-antd-input" : ""}`}
           id="search-input"
