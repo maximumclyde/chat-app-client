@@ -209,49 +209,51 @@ function FindUsersModal(props: UserModalProps) {
           }}
         />
       </div>
-      <Divider orientation="left" orientationMargin={20}>
-        Friend Requests
-      </Divider>
-      <div className="requests-section">
-        {requestsList?.length ? (
-          requestsList.map((e, i) => (
+      <div className="results">
+        <Divider orientation="left" orientationMargin={20}>
+          Friend Requests
+        </Divider>
+        <div className="requests-section">
+          {requestsList?.length ? (
+            requestsList.map((e, i) => (
+              <UserPreview
+                user={e}
+                key={`req-${i}`}
+                onResponseHandler={onResponseHandler}
+              />
+            ))
+          ) : (
+            <Empty description="You are no friend requests" />
+          )}
+        </div>
+        {Boolean(requestsMade?.length) && (
+          <Divider orientation="left" orientationMargin={20}>
+            Requests Made
+          </Divider>
+        )}
+        <div className="results-section">
+          {requestsMade.map((e, i) => (
             <UserPreview
               user={e}
-              key={`req-${i}`}
-              onResponseHandler={onResponseHandler}
+              key={`made-${i}`}
+              onRequestHandler={onRequestHandler}
             />
-          ))
-        ) : (
-          <Empty description="You are no friend requests" />
+          ))}
+        </div>
+        {Boolean(queryUsers?.length) && (
+          <Divider orientation="left" orientationMargin={20}>
+            Search Results
+          </Divider>
         )}
-      </div>
-      {Boolean(requestsMade?.length) && (
-        <Divider orientation="left" orientationMargin={20}>
-          Requests Made
-        </Divider>
-      )}
-      <div className="results-section">
-        {requestsMade.map((e, i) => (
-          <UserPreview
-            user={e}
-            key={`made-${i}`}
-            onRequestHandler={onRequestHandler}
-          />
-        ))}
-      </div>
-      {Boolean(queryUsers?.length) && (
-        <Divider orientation="left" orientationMargin={20}>
-          Search Results
-        </Divider>
-      )}
-      <div className="results-section">
-        {queryUsers.map((e, i) => (
-          <UserPreview
-            user={e}
-            key={`search-${i}`}
-            onRequestHandler={onRequestHandler}
-          />
-        ))}
+        <div className="results-section">
+          {queryUsers.map((e, i) => (
+            <UserPreview
+              user={e}
+              key={`search-${i}`}
+              onRequestHandler={onRequestHandler}
+            />
+          ))}
+        </div>
       </div>
     </InfoModal>
   );

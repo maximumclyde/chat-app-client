@@ -111,7 +111,7 @@ function ChatHeader(props: ChatHeaderProps) {
             title: "Confirmation",
           }}
         >
-          {`Are you sure you want to ${confirmAction.toLocaleLowerCase().split("_").join(" ")}`}
+          {`Are you sure you want to ${confirmAction.toLocaleLowerCase().split("_").join(" ")}?`}
         </InfoModal>
       )}
     </Fragment>

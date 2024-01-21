@@ -14,14 +14,19 @@
         width: 100%;
       }
 
+      .results {
+        @include flex-ss(column);
+        max-height: calc(96vh - 2rem - 100px);
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
       .requests-section,
       .results-section {
         @include flex-cc(column);
         width: 100%;
         height: fit-content;
-        max-height: 30vh;
-        overflow-y: auto;
-        overflow-x: hidden;
       }
     }
   }

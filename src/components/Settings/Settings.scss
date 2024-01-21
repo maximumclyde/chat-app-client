@@ -21,20 +21,24 @@
     }
 
     .ant-modal-body {
-      height: calc(98vh - 45px);
+      height: calc(96vh - 45px);
       max-height: 600px;
       width: calc(98vw - 2rem);
       max-width: 900px;
       padding: 0;
 
+      .ant-layout-content {
+        height: calc(96vh - 45px - 1rem);
+      }
+
       .ant-layout-has-sider {
-        height: calc(98vh - 45px);
+        height: calc(96vh - 45px);
         max-height: 600px;
         width: 100%;
       }
 
       .ant-layout-sider {
-        height: calc(98vh - 45px);
+        height: calc(96vh - 45px - 1rem);
         max-height: 600px;
       }
 
@@ -44,7 +48,7 @@
       }
 
       .settings-layout-body {
-        height: 100%;
+        height: calc(96vh - 45px - 1rem);
         padding: 0.5rem;
         @include light-body-style();
       }

@@ -38,6 +38,9 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
   const userMessages = useSelector(
     (state: GlobalStoreType) => state.userMessages
   );
+  const authenticatedUser = useSelector(
+    (state: GlobalStoreType) => state.authenticatedUser
+  );
 
   const [viewObject, setViewObject] = useState<ViewObjectType>();
 
@@ -91,9 +94,14 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
 
   useEffect(() => {
     if (viewObject?._id) {
-      updateMessageNumber(userMessages, viewObject?._id);
+      updateMessageNumber(
+        userMessages,
+        viewObject?._id,
+        authenticatedUser._id,
+        viewObject?.type
+      );
     }
-  }, [viewObject, userMessages]);
+  }, [viewObject, userMessages, authenticatedUser._id]);
 
   useEffect(() => {
     if (viewObject?._id) {
@@ -130,7 +138,12 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
           }
 
           if (tmpNewViewObject?._id) {
-            updateMessageNumber(userMessages, tmpNewViewObject._id);
+            updateMessageNumber(
+              userMessages,
+              tmpNewViewObject._id,
+              authenticatedUser._id,
+              tmpNewViewObject.type
+            );
             prevQueryLimit.current = false;
           }
 
@@ -143,18 +156,30 @@ const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
         },
       };
     },
-    [friendList, groupList, viewObject, userMessages]
+    [friendList, groupList, viewObject, userMessages, authenticatedUser._id]
   );
 
-  function updateMessageNumber(messages: MessageType[], id: string) {
+  function updateMessageNumber(
+    messages: MessageType[],
+    id: string,
+    userId: string,
+    type?: "GROUP" | "FRIEND"
+  ) {
     let messagesExchanged = 0;
     for (const message of messages) {
-      if (
-        message.senderId === id ||
-        message.receiverId === id ||
-        message.groupId === id
-      ) {
-        ++messagesExchanged;
+      if (type === "GROUP") {
+        if (message.groupId === id) {
+          ++messagesExchanged;
+        }
+      } else {
+        if (!message?.groupId) {
+          if (
+            (message.senderId === id && message.receiverId === userId) ||
+            (message.receiverId === id && message.senderId === userId)
+          ) {
+            ++messagesExchanged;
+          }
+        }
       }
     }
 

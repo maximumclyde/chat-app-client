@@ -17,7 +17,7 @@
         @include flex-cc(column);
         width: 100%;
         height: fit-content;
-        max-height: 30vh;
+        max-height: calc(96vh - 2rem - 100px);
         overflow-y: auto;
         overflow-x: hidden;
       }
