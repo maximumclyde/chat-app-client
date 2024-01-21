@@ -2,7 +2,7 @@
 
 .chat-header-container {
   height: 50px;
-  width: 100%;
+  width: calc(100% - 2rem);
   @include light-header-style();
   @include flex-space();
   border-bottom: 1px solid $light-border;
@@ -15,9 +15,68 @@
     @include flex-sc();
     gap: 10px;
   }
+
+  .anticon-more {
+    height: 2rem;
+    width: 2rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    @include flex-cc();
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: $light-active;
+    }
+  }
 }
 
 .chat-header-container.chat-header-dark {
   @include dark-header-style();
   border-bottom: 1px solid $dark-border;
+
+  .anticon-more {
+    &:hover {
+      background-color: $dark-active;
+    }
+  }
+}
+
+.chat-header-drop {
+  border: 1px solid $light-border;
+
+  .ant-dropdown-menu-item {
+    color: $light-color;
+    transition: background-color 0.3s ease-in-out;
+  }
+
+  .ant-dropdown-menu-item:where(:not(.ant-dropdown-menu-item:last-child)) {
+    border-bottom: 1px solid;
+    border-color: $light-border;
+  }
+
+  .ant-dropdown-menu-item:where(:not(.ant-dropdown-menu-item-danger)) {
+    &:hover {
+      background-color: $light-active;
+    }
+  }
+}
+
+.chat-header-drop.ant-dropdown-menu-dark {
+  @include dark-body-style();
+  border: 1px solid $dark-border;
+
+  .ant-dropdown-menu-item {
+    color: $dark-color;
+  }
+
+  .ant-dropdown-menu-item:where(:not(.ant-dropdown-menu-item:last-child)) {
+    border-color: $dark-border;
+  }
+
+  .ant-dropdown-menu-item:where(:not(.ant-dropdown-menu-item-danger)) {
+    &:hover {
+      background-color: $dark-active;
+    }
+  }
 }

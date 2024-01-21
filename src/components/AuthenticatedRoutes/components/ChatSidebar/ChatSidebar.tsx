@@ -29,12 +29,12 @@ export type SidebarHandle = {
 const { Meta } = Card;
 
 const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
+  const groupList = useSelector((state: GlobalStoreType) => state.groupList);
+  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
   const { preferences } = useSelector(
     (state: GlobalStoreType) => state.preferences
   );
 
-  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
-  const groupList = useSelector((state: GlobalStoreType) => state.groupList);
   const [searchFilter, setSearchFilter] = useState("");
   const [newMessages, setNewMessages] = useState<NewMessageType>({});
 

@@ -7,12 +7,12 @@ import {
   useImperativeHandle,
 } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { message } from "antd";
 import axios from "axios";
+import { message } from "antd";
 
-import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
 import { userMessageActions } from "@store-actions";
 import { ChatHeader, MessageSection } from "./components";
+import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
 
 import "./ChatPage.scss";
 
@@ -30,18 +30,19 @@ type ChatPageProps = {
 };
 
 const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
+  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
+  const groupList = useSelector((state: GlobalStoreType) => state.groupList);
   const { preferences } = useSelector(
     (state: GlobalStoreType) => state.preferences
   );
   const userMessages = useSelector(
     (state: GlobalStoreType) => state.userMessages
   );
-  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
-  const groupList = useSelector((state: GlobalStoreType) => state.groupList);
 
   const [viewObject, setViewObject] = useState<ViewObjectType>();
 
   const dispatch = useDispatch();
+
   const prevQueryLimit = useRef<boolean>(false);
   const mesNo = useRef<number>(0);
 

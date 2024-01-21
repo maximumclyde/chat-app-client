@@ -3,11 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { message } from "antd";
 import axios from "axios";
 
+import socket from "@socket";
 import { MessageInput } from "..";
 import { MessageBubble } from "@ui-components";
-import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
 import { userMessageActions } from "@store-actions";
-import socket from "@socket";
+import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
 
 import "./MessageSection.scss";
 
@@ -108,11 +108,14 @@ function MessageSection(props: MessageSectionProps) {
       return false;
     }
 
-    return (
-      message?.groupId === viewObject?._id ||
-      message?.senderId === viewObject?._id ||
-      message?.receiverId === viewObject?._id
-    );
+    if (message?.groupId) {
+      return message?.groupId === viewObject?._id;
+    } else {
+      return (
+        message?.senderId === viewObject?._id ||
+        message?.receiverId === viewObject?._id
+      );
+    }
   }
 
   async function onSend(content: string) {

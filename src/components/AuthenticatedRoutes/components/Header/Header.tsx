@@ -8,11 +8,11 @@ import {
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 
-import Settings from "../../../Settings/Settings";
-import { FindUsersModal, NewGroupModal } from "./components";
-import { GlobalStoreType, FriendType } from "@types";
 import socket from "@socket";
 import { toArrayBuffer } from "@utils";
+import Settings from "../../../Settings/Settings";
+import { GlobalStoreType, FriendType } from "@types";
+import { FindUsersModal, NewGroupModal } from "./components";
 import { userActions, friendListActions } from "@store-actions";
 
 import "./Header.scss";

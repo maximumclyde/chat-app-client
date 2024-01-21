@@ -1,16 +1,18 @@
 import { useState, Fragment } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Card, Avatar, Tooltip, message } from "antd";
-import axios from "axios";
+import { useSelector } from "react-redux";
+import { Card, Avatar, Tooltip } from "antd";
 import { StopOutlined } from "@ant-design/icons";
 
-import { StyledButton, InfoModal } from "@ui-components";
-import { FriendType, GlobalStoreType, UserType } from "@types";
 import {
-  userActions,
-  friendListActions,
-  userMessageActions,
-} from "@store-actions";
+  blockUser,
+  makeRequest,
+  removeFriend,
+  removeRequest,
+  acceptRequest,
+  declineRequest,
+} from "@utils";
+import { StyledButton, InfoModal } from "@ui-components";
+import { FriendType, GlobalStoreType } from "@types";
 
 import "./UserPreview.scss";
 
@@ -35,14 +37,13 @@ function UserPreview(props: UserPreviewProps) {
 
   const [confirmation, setConfirmation] = useState<ConfirmationType>();
 
-  const dispatch = useDispatch();
-
   const {
     user,
     customAction,
     onRequestHandler = () => {},
     onResponseHandler = () => {},
   } = props;
+
   const darkMode = preferences.theme === "dark";
 
   const isFriend = authenticatedUser.friendList.includes(user?._id);
@@ -61,100 +62,48 @@ function UserPreview(props: UserPreviewProps) {
   const negativeAction = mainActionText !== "Make friend request";
 
   async function requestAction(path: "removeRequest" | "request") {
-    await axios
-      .post<UserType>(`/users/${path}/${user._id}`)
-      .then(({ data }) => {
-        dispatch(
-          userActions.updateUserProperties({
-            requestsMade: data?.requestsMade,
-          })
-        );
+    let func;
+
+    if (path === "request") {
+      func = makeRequest;
+    } else {
+      func = removeRequest;
+    }
+
+    await func(user._id)
+      .then(() => {
         const type: ActionType = path === "request" ? "MAKE" : "REMOVE";
         onRequestHandler(user._id, type);
       })
-      .catch((err) => {
-        void message.error({
-          content: "Something went wrong while processing request",
-          key: "requestError",
-        });
-        console.log("Error making request: ", err);
-      });
+      .catch(() => {});
   }
 
   async function acceptAction(path: "accept" | "decline") {
-    await axios
-      .post<UserType>(`/users/${path}/${user._id}`)
-      .then((res) => {
-        dispatch(
-          userActions.updateUserProperties({
-            friendList: res.data.friendList,
-            friendRequests: res.data.friendRequests,
-          })
-        );
+    let func;
 
-        if (path === "accept") {
-          dispatch(friendListActions.addFriend(user));
-        }
+    if (path === "accept") {
+      func = acceptRequest;
+    } else {
+      func = declineRequest;
+    }
 
+    await func(user)
+      .then(() => {
         onResponseHandler(user._id);
       })
-      .catch((err) => {
-        void message.error({
-          content: `Something went wrong while trying to ${path} the request`,
-          key: "userAcceptError",
-        });
-        console.log("Error declining the request: ", err);
-      });
+      .catch(() => {});
   }
 
   async function blockHandler() {
-    await axios
-      .post<UserType>(`/users/block/${user._id}`)
-      .then(({ data }) => {
-        dispatch(
-          userActions.updateUserProperties({
-            friendList: data.friendList,
-            friendRequests: data.friendRequests,
-            requestsMade: data.requestsMade,
-            userBlock: data.userBlock,
-            blockedBy: data.blockedBy,
-          })
-        );
-
-        dispatch(friendListActions.removeFriend(user._id));
-        dispatch(userMessageActions.removeUserMessages(user._id));
+    await blockUser(user._id, user.userName)
+      .then(() => {
         onRequestHandler(user._id, "REMOVE");
       })
-      .catch((err) => {
-        void message.error({
-          content: `Something went wrong while trying to block ${user.userName}`,
-          key: "blockError",
-        });
-        console.log("Error blocking user: ", err);
-      });
+      .catch(() => {});
   }
 
   async function friendRemove() {
-    await axios
-      .post<UserType>(`/users/unfriend/${user._id}`)
-      .then(({ data }) => {
-        if (user?.avatar) {
-          URL.revokeObjectURL(user?.avatar);
-        }
-
-        dispatch(
-          userActions.updateUserProperties({ friendList: data?.friendList })
-        );
-        dispatch(friendListActions.removeFriend(user._id));
-        dispatch(userMessageActions.removeUserMessages(user._id));
-      })
-      .catch((err) => {
-        void message.error({
-          content: "Something went wrong while trying to unfriend",
-          key: "unfriendError",
-        });
-        console.log("Error unfriending user: ", err);
-      });
+    await removeFriend(user._id).catch(() => {});
   }
 
   function clickHandler() {
@@ -187,7 +136,7 @@ function UserPreview(props: UserPreviewProps) {
           }}
         />
         <div className="actions-container">
-          {customAction ? (
+          {customAction !== undefined ? (
             customAction
           ) : (
             <Fragment>
