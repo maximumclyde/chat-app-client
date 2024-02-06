@@ -1,7 +1,6 @@
-import { useState, useEffect, Fragment, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Avatar, Badge, notification, Tooltip } from "antd";
-import axios from "axios";
+import { useState, useEffect, Fragment } from "react";
+import { useSelector } from "react-redux";
+import { Avatar, Badge, Tooltip } from "antd";
 import {
   GlobalOutlined,
   SettingOutlined,
@@ -9,22 +8,12 @@ import {
 } from "@ant-design/icons";
 
 import socket from "@socket";
-import { toArrayBuffer } from "@utils";
+import { requestsSocketHandler } from "@utils";
 import Settings from "../../../Settings/Settings";
-import { GlobalStoreType, FriendType } from "@types";
+import { GlobalStoreType } from "@types";
 import { FindUsersModal, NewGroupModal } from "./components";
-import { userActions, friendListActions } from "@store-actions";
 
 import "./Header.scss";
-
-type RequestBodyType = {
-  _id: string;
-};
-
-type SocketRequestType = {
-  request: string;
-  body: RequestBodyType;
-};
 
 function Header() {
   const { preferences } = useSelector(
@@ -37,64 +26,15 @@ function Header() {
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [usersModalOpen, setUsersModalOpen] = useState<boolean>(false);
   const [newGroupOpen, setNewGroupOpen] = useState<boolean>(false);
-  const dispatch = useDispatch();
-
-  const handleSocketHeaderRequests = useCallback(
-    (event: MessageEvent<string>) => {
-      const { request, body } = JSON.parse(event.data) as SocketRequestType;
-
-      if (request === "friend-request") {
-        dispatch(
-          userActions.addIdToUserProperties({ friendRequests: body._id })
-        );
-      } else if (request === "request-removed") {
-        dispatch(
-          userActions.removeIdFromUserProperties({ friendRequests: body._id })
-        );
-      } else if (request === "request-accept") {
-        dispatch(
-          userActions.removeIdFromUserProperties({ requestsMade: body._id })
-        );
-        dispatch(userActions.addIdToUserProperties({ friendList: body._id }));
-
-        axios
-          .get<FriendType>(`/users/${body._id}`)
-          .then((res) => {
-            let avatar = undefined;
-            if (res.data?.avatar) {
-              avatar = URL.createObjectURL(toArrayBuffer(res.data.avatar));
-            }
-            dispatch(friendListActions.addFriend({ ...res.data, avatar }));
-            notification.success({
-              message: (
-                <span>
-                  <b>{res.data.userName}&nbsp;</b>has accepted your request!
-                </span>
-              ),
-              duration: 3,
-              placement: "bottomLeft",
-            });
-          })
-          .catch((err) => {
-            console.log("Error getting friend: ", err);
-          });
-      } else if (request === "request-decline") {
-        dispatch(
-          userActions.removeIdFromUserProperties({ requestsMade: body._id })
-        );
-      }
-    },
-    [dispatch]
-  );
 
   useEffect(() => {
     if (socket.readyState === WebSocket.OPEN) {
-      socket.addEventListener("message", handleSocketHeaderRequests);
+      socket.addEventListener("message", requestsSocketHandler);
     }
     return () => {
-      socket.removeEventListener("message", handleSocketHeaderRequests);
+      socket.removeEventListener("message", requestsSocketHandler);
     };
-  }, [handleSocketHeaderRequests]);
+  }, []);
 
   return (
     <Fragment>

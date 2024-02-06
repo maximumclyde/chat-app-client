@@ -11,3 +11,7 @@ export { default as makeRequest } from "./makeRequest";
 export { default as removeRequest } from "./removeRequest";
 export { default as acceptRequest } from "./acceptRequest";
 export { default as declineRequest } from "./declineRequest";
+export { default as groupSocketHandler } from "./groupSocketHandler";
+export { default as requestsSocketHandler } from "./requestsSocketHandler";
+export { default as usersSocketHandler } from "./usersSocketHandler";
+export { default as messageSocketHandler } from "./messageSocketHandler";

@@ -7,14 +7,10 @@ import socket from "@socket";
 import { MessageInput } from "..";
 import { MessageBubble } from "@ui-components";
 import { userMessageActions } from "@store-actions";
+import { messageSocketHandler as socketHandler } from "@utils";
 import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
 
 import "./MessageSection.scss";
-
-type SocketRequestType = {
-  request: string;
-  body: MessageType;
-};
 
 type MessageSectionProps = {
   viewObject?: Partial<FriendType & GroupType & { type: "GROUP" | "FRIEND" }>;
@@ -55,24 +51,19 @@ function MessageSection(props: MessageSectionProps) {
 
   const messageSocketHandler = useCallback(
     (event: MessageEvent<string>) => {
-      const { request, body } = JSON.parse(event.data) as SocketRequestType;
-      if (request === "message-received" || request === "group-message") {
-        dispatch(userMessageActions.addMessages([body]));
+      socketHandler(event, {
+        onMessageReceived(sender: string) {
+          if (viewObject?._id !== sender) {
+            onNewMessage(sender);
+          }
 
-        const sendId = body?.groupId || body?.senderId;
-        if (viewObject?._id !== sendId) {
-          onNewMessage(sendId);
-        }
-
-        if (
-          body?.senderId === viewObject?._id ||
-          body?.groupId === viewObject?._id
-        ) {
-          scrollIfOnBottom();
-        }
-      }
+          if (viewObject?._id === sender) {
+            scrollIfOnBottom();
+          }
+        },
+      });
     },
-    [dispatch, viewObject, scrollIfOnBottom, onNewMessage]
+    [viewObject, scrollIfOnBottom, onNewMessage]
   );
 
   useEffect(() => {
