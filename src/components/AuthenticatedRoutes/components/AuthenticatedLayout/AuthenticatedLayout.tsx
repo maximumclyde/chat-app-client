@@ -1,7 +1,7 @@
 import { useRef, useCallback, useEffect } from "react";
 
 import socket from "@socket";
-import { usersSocketHandler } from "@utils";
+import { usersSocketHandler, groupSocketHandler } from "@utils";
 import { ChatHandle } from "../ChatPage/ChatPage";
 import { Header, ChatSidebar, ChatPage } from "..";
 import { SidebarHandle } from "../ChatSidebar/ChatSidebar";
@@ -20,13 +20,19 @@ function AuthenticatedLayout() {
     usersSocketHandler(event, { chatRef });
   }, []);
 
+  const groupHandler = useCallback((event: MessageEvent<string>) => {
+    void groupSocketHandler(event);
+  }, []);
+
   useEffect(() => {
     socket.addEventListener("message", socketRemoveEvent);
+    socket.addEventListener("message", groupHandler);
 
     return () => {
       socket.removeEventListener("message", socketRemoveEvent);
+      socket.removeEventListener("message", groupHandler);
     };
-  }, [socketRemoveEvent]);
+  }, [socketRemoveEvent, groupHandler]);
 
   const onChatSelect = useCallback((id: string, type: "FRIEND" | "GROUP") => {
     const e = document.getElementById(id);

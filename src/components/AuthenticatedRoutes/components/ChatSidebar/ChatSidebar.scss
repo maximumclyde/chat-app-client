@@ -22,7 +22,7 @@
     overflow-y: auto;
 
     .sidebar-option {
-      height: 50px;
+      min-height: 50px;
       width: calc(100% - 5px);
       padding-left: 5px;
       @include flex-sc();
