@@ -1,9 +1,8 @@
 import { useState, Fragment } from "react";
 import { useSelector } from "react-redux";
-import { Card, Avatar, Dropdown } from "antd";
-import { MoreOutlined } from "@ant-design/icons";
+import { Card, Avatar } from "antd";
 
-import { getOptions } from "./utils";
+import { GroupCard, ProfileCard } from "./components";
 import { InfoModal } from "@ui-components";
 import { blockUser, removeFriend } from "@utils";
 import { FriendType, GroupType, GlobalStoreType } from "@types";
@@ -23,7 +22,7 @@ function ChatHeader(props: ChatHeaderProps) {
 
   const [confirmAction, setConfirmAction] = useState<string>("");
   const [profileCardOpen, setProfileCardOpen] = useState<boolean>(false);
-  const [usersCardOpen, setUsersCardOpen] = useState<boolean>(false);
+  const [groupCardOpen, setGroupCardOpen] = useState<boolean>(false);
 
   const { viewObject } = props;
 
@@ -31,7 +30,7 @@ function ChatHeader(props: ChatHeaderProps) {
     if (key === "SEE_PROFILE") {
       setProfileCardOpen(true);
     } else if (key === "SEE_MEMBERS") {
-      setUsersCardOpen(true);
+      setGroupCardOpen(true);
     } else {
       if (!confirmed) {
         setConfirmAction(key);
@@ -56,6 +55,14 @@ function ChatHeader(props: ChatHeaderProps) {
     }
   }
 
+  function openProfileCard() {
+    if (viewObject?.type === "FRIEND") {
+      setProfileCardOpen(true);
+    } else {
+      setGroupCardOpen(true);
+    }
+  }
+
   return (
     <Fragment>
       <div
@@ -69,9 +76,15 @@ function ChatHeader(props: ChatHeaderProps) {
         <div className="chat-header-section-left chat-header-section">
           <Meta
             {...{
-              avatar: <Avatar src={viewObject?.avatar} alt="" />,
+              avatar: (
+                <Avatar
+                  alt=""
+                  src={viewObject?.avatar}
+                  onClick={openProfileCard}
+                />
+              ),
               title: (
-                <b>
+                <b onClick={openProfileCard}>
                   {viewObject
                     ? viewObject?.groupName || viewObject?.userName
                     : ""}
@@ -79,22 +92,6 @@ function ChatHeader(props: ChatHeaderProps) {
               ),
             }}
           />
-        </div>
-        <div className="chat-header-section-right chat-header-section">
-          <Dropdown
-            {...{
-              menu: {
-                items: getOptions(viewObject?.type),
-                onClick(e) {
-                  void optionClickHandler(e.key);
-                },
-                className: "chat-header-drop",
-                theme: preferences.theme,
-              },
-            }}
-          >
-            <MoreOutlined />
-          </Dropdown>
         </div>
       </div>
       {Boolean(confirmAction) && (
@@ -111,8 +108,33 @@ function ChatHeader(props: ChatHeaderProps) {
             title: "Confirmation",
           }}
         >
-          {`Are you sure you want to ${confirmAction.toLocaleLowerCase().split("_").join(" ")}?`}
+          {`Are you sure you want to ${confirmAction
+            .toLocaleLowerCase()
+            .split("_")
+            .join(" ")}?`}
         </InfoModal>
+      )}
+      {profileCardOpen && viewObject && (
+        <ProfileCard
+          {...{
+            open: true,
+            viewObject,
+            onCancel() {
+              setProfileCardOpen(false);
+            },
+          }}
+        />
+      )}
+      {groupCardOpen && viewObject && (
+        <GroupCard
+          {...{
+            open: true,
+            viewObject,
+            onCancel() {
+              setGroupCardOpen(false);
+            },
+          }}
+        />
       )}
     </Fragment>
   );

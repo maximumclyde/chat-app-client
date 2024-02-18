@@ -9,7 +9,7 @@ import {
 
 import socket from "@socket";
 import { requestsSocketHandler } from "@utils";
-import Settings from "../../../Settings/Settings";
+import Settings from "../../../../../Settings/Settings";
 import { GlobalStoreType } from "@types";
 import { FindUsersModal, NewGroupModal } from "./components";
 

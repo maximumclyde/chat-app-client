@@ -5,3 +5,4 @@ export { default as FormFields } from "./FormFields/FormFields";
 export { default as StyledButton } from "./StyledButton/StyledButton";
 export { default as Field } from "./FormFields/Field";
 export { default as MessageBubble } from "./MessageBubble/MessageBubble";
+export { default as PreviewModal } from "./PreviewModal/PreviewModal";

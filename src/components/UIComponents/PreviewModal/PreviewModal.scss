@@ -1,0 +1,9 @@
+.image-preview-modal {
+  .ant-modal-body {
+    max-width: 450px;
+    height: calc(96vh - 45px);
+    max-height: 450px;
+    padding: 0 !important;
+    aspect-ratio: 1;
+  }
+}

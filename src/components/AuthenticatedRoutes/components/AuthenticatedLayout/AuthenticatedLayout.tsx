@@ -2,9 +2,9 @@ import { useRef, useCallback, useEffect } from "react";
 
 import socket from "@socket";
 import { usersSocketHandler, groupSocketHandler } from "@utils";
-import { ChatHandle } from "../ChatPage/ChatPage";
-import { Header, ChatSidebar, ChatPage } from "..";
-import { SidebarHandle } from "../ChatSidebar/ChatSidebar";
+import { ChatHandle } from "./components/ChatPage/ChatPage";
+import { Header, ChatSidebar, ChatPage } from "./components";
+import { SidebarHandle } from "./components/ChatSidebar/ChatSidebar";
 
 import "./AuthenticatedLayout.scss";
 
