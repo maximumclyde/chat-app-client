@@ -1,7 +1,7 @@
-import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 
-import { MessageType, GlobalStoreType } from "@types";
+import { MessageType } from "@types";
+import { useAppSelector } from "@hooks";
 
 import "./MessageBubble.scss";
 
@@ -10,9 +10,7 @@ type BubbleProps = {
 };
 
 function MessageBubble(props: BubbleProps) {
-  const authenticatedUser = useSelector(
-    (state: GlobalStoreType) => state.authenticatedUser
-  );
+  const authenticatedUser = useAppSelector((state) => state.authenticatedUser);
 
   const { message } = props;
 

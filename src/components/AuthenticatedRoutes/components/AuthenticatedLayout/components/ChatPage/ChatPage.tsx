@@ -6,13 +6,13 @@ import {
   useCallback,
   useImperativeHandle,
 } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { message } from "antd";
 
 import { userMessageActions } from "@store-actions";
+import { useAppSelector, useAppDispatch } from "@hooks";
 import { ChatHeader, MessageSection } from "./components";
-import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
+import { FriendType, GroupType, MessageType } from "@types";
 
 import "./ChatPage.scss";
 
@@ -30,21 +30,15 @@ type ChatPageProps = {
 };
 
 const ChatPage = forwardRef<ChatHandle, ChatPageProps>((props, ref) => {
-  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
-  const groupList = useSelector((state: GlobalStoreType) => state.groupList);
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const userMessages = useSelector(
-    (state: GlobalStoreType) => state.userMessages
-  );
-  const authenticatedUser = useSelector(
-    (state: GlobalStoreType) => state.authenticatedUser
-  );
+  const friendList = useAppSelector((state) => state.friendList);
+  const groupList = useAppSelector((state) => state.groupList);
+  const { preferences } = useAppSelector((state) => state.preferences);
+  const userMessages = useAppSelector((state) => state.userMessages);
+  const authenticatedUser = useAppSelector((state) => state.authenticatedUser);
 
   const [viewObject, setViewObject] = useState<ViewObjectType>();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const prevQueryLimit = useRef<boolean>(false);
   const mesNo = useRef<number>(0);

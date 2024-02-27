@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import dayjs from "dayjs";
 import axios from "axios";
 import { Avatar, Upload, UploadFile, message } from "antd";
 import { UserOutlined, PlusOutlined } from "@ant-design/icons";
 
-import { StyledButton } from "@ui-components";
-import { GlobalStoreType, UserType } from "@types";
-import { userActions } from "@store-actions";
+import { UserType } from "@types";
 import { toArrayBuffer } from "@utils";
+import { userActions } from "@store-actions";
+import { StyledButton } from "@ui-components";
+import { useAppSelector, useAppDispatch } from "@hooks";
 
 import "./ProfileSettings.scss";
 
@@ -22,16 +22,13 @@ function UploadButton() {
 }
 
 function ProfileSettings() {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const authenticatedUser = useSelector(
-    (state: GlobalStoreType) => state.authenticatedUser
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
+  const authenticatedUser = useAppSelector((state) => state.authenticatedUser);
+  
   const [changeAvatarMode, setChangeAvatarMode] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   async function saveAvatarHandler() {
     const file = fileList?.[0]?.originFileObj;

@@ -1,8 +1,7 @@
-import { useSelector } from "react-redux";
 import { Input, Form } from "antd";
 import { SendOutlined, PaperClipOutlined } from "@ant-design/icons";
 
-import { GlobalStoreType } from "@types";
+import { useAppSelector } from "@hooks";
 
 import "./MessageInput.scss";
 
@@ -11,9 +10,7 @@ type MessageInputProps = {
 };
 
 function MessageInput(props: MessageInputProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
   const [form] = Form.useForm();
 
   const { onSend } = props;

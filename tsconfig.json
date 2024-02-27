@@ -33,7 +33,9 @@
       "@hooks": ["./src/hooks"],
       "@store-actions": ["./src/store/storeActions"],
       "@socket": ["./src/Socket"]
-    }
+    },
+
+    "baseUrl": "./"
   },
   "include": ["src", ".eslintrc.cjs"],
   "references": [{ "path": "./tsconfig.node.json" }]

@@ -1,5 +1,4 @@
 import { useState, Fragment } from "react";
-import { useSelector } from "react-redux";
 import { Card, Avatar, Tooltip } from "antd";
 import { StopOutlined } from "@ant-design/icons";
 
@@ -11,8 +10,9 @@ import {
   acceptRequest,
   declineRequest,
 } from "@utils";
+import { FriendType } from "@types";
+import { useAppSelector } from "@hooks";
 import { StyledButton, InfoModal } from "@ui-components";
-import { FriendType, GlobalStoreType } from "@types";
 
 import "./UserPreview.scss";
 
@@ -28,12 +28,8 @@ type UserPreviewProps = {
 };
 
 function UserPreview(props: UserPreviewProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const authenticatedUser = useSelector(
-    (state: GlobalStoreType) => state.authenticatedUser
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
+  const authenticatedUser = useAppSelector((state) => state.authenticatedUser);
 
   const [confirmation, setConfirmation] = useState<ConfirmationType>();
 

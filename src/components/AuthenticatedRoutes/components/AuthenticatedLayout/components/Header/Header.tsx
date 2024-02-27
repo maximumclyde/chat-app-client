@@ -1,5 +1,4 @@
 import { useState, useEffect, Fragment } from "react";
-import { useSelector } from "react-redux";
 import { Avatar, Badge, Tooltip } from "antd";
 import {
   GlobalOutlined,
@@ -8,24 +7,20 @@ import {
 } from "@ant-design/icons";
 
 import socket from "@socket";
+import { useAppSelector } from "@hooks";
 import { requestsSocketHandler } from "@utils";
 import Settings from "../../../../../Settings/Settings";
-import { GlobalStoreType } from "@types";
 import { FindUsersModal, NewGroupModal } from "./components";
 
 import "./Header.scss";
 
 function Header() {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const authenticatedUser = useSelector(
-    (state: GlobalStoreType) => state.authenticatedUser
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
+  const authenticatedUser = useAppSelector((state) => state.authenticatedUser);
 
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-  const [usersModalOpen, setUsersModalOpen] = useState<boolean>(false);
   const [newGroupOpen, setNewGroupOpen] = useState<boolean>(false);
+  const [usersModalOpen, setUsersModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (socket.readyState === WebSocket.OPEN) {

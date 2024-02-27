@@ -36,6 +36,23 @@
         font-size: 0.7rem;
       }
     }
+
+    .member {
+      margin-bottom: 10px;
+      .ant-card-meta-detail {
+        width: -moz-fill-available;
+        width: -webkit-fill-available;
+
+        .ant-card-meta-title {
+          width: 100%;
+
+          .member-name-container {
+            width: 100%;
+            @include flex-space(row);
+          }
+        }
+      }
+    }
   }
 }
 

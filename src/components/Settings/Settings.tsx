@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { Layout } from "antd";
 
 import {
@@ -7,8 +6,8 @@ import {
   GeneralSettings,
   ProfileSettings,
 } from "./components";
+import { useAppSelector } from "@hooks";
 import { InfoModal } from "@ui-components";
-import { GlobalStoreType } from "@types";
 
 import "./Settings.scss";
 
@@ -27,9 +26,7 @@ const views: Dictionary = {
 };
 
 function Settings(props: SettingsPropsType) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
 
   const [activeView, setActiveView] = useState("Profile");
 

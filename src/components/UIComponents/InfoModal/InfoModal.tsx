@@ -1,9 +1,8 @@
 import { ReactNode } from "react";
-import { useSelector } from "react-redux";
 import { Modal, ModalProps } from "antd";
 
+import { useAppSelector } from "@hooks";
 import { StyledButton } from "@ui-components";
-import { GlobalStoreType } from "@types";
 
 import "./InfoModal.scss";
 
@@ -24,9 +23,7 @@ type InfoBaseProps = {
 export type InfoModalProps = Partial<ModalProps> & InfoBaseProps;
 
 function InfoModal(props: InfoModalProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
 
   const {
     children = <></>,

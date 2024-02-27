@@ -5,6 +5,7 @@ export interface GroupType {
   groupName: string;
   groupMembers: string[];
   groupAdmins: string[];
+  groupSuperAdmins: string[];
   createdAt: string;
   avatar?: string;
   createdBy: {

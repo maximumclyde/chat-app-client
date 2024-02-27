@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import preferences, { PreferenceStateType } from "./preferences";
-import authenticatedUser, { UserType } from "./authenticatedUser";
-import userMessages, { MessageType } from "./userMessages";
-import friendList, { FriendType } from "./friendList";
-import groupList, { GroupType } from "./groupList";
+import groupList from "./groupList";
+import friendList from "./friendList";
+import preferences from "./preferences";
+import userMessages from "./userMessages";
+import authenticatedUser from "./authenticatedUser";
 
 const store = configureStore({
   reducer: {
@@ -16,12 +16,7 @@ const store = configureStore({
   },
 });
 
-export type GlobalStoreType = {
-  preferences: PreferenceStateType;
-  authenticatedUser: UserType;
-  userMessages: MessageType[];
-  friendList: FriendType[];
-  groupList: GroupType[];
-};
+export type AppDispatch = typeof store.dispatch;
+export type GlobalStoreType = ReturnType<typeof store.getState>
 
 export default store;

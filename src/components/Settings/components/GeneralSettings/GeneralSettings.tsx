@@ -1,19 +1,17 @@
-import { useDispatch, useSelector } from "react-redux";
 import { Form, message } from "antd";
 import axios from "axios";
 
-import { settingsFields } from "../../utils";
-import { preferenceActions } from "@store-actions";
-import { GlobalStoreType, PreferenceStateType } from "@types";
 import { FormFields } from "@ui-components";
+import { settingsFields } from "../../utils";
+import { PreferenceStateType } from "@types";
+import { preferenceActions } from "@store-actions";
+import { useAppDispatch, useAppSelector } from "@hooks";
 
 import "./GeneralSettings.scss";
 
 function GeneralSettings() {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const dispatch = useDispatch();
+  const { preferences } = useAppSelector((state) => state.preferences);
+  const dispatch = useAppDispatch();
   const [form] = Form.useForm();
 
   async function onPreferenceChange(key: string, value: any) {

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { Input, message, Divider, Empty } from "antd";
 import axios from "axios";
 
 import { UserPreview } from "..";
-import { InfoModal } from "@ui-components";
-import { GlobalStoreType, FriendType } from "@types";
+import { FriendType } from "@types";
 import { toArrayBuffer } from "@utils";
+import { useAppSelector } from "@hooks";
+import { InfoModal } from "@ui-components";
 
 import "./FindUsersModal.scss";
 
@@ -16,12 +16,8 @@ type UserModalProps = {
 };
 
 function FindUsersModal(props: UserModalProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const authenticatedUser = useSelector(
-    (state: GlobalStoreType) => state.authenticatedUser
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
+  const authenticatedUser = useAppSelector((state) => state.authenticatedUser);
 
   const [queryUsers, setQueryUsers] = useState<FriendType[]>([]);
   const [requestsList, setRequestsList] = useState<FriendType[]>([]);
@@ -223,7 +219,7 @@ function FindUsersModal(props: UserModalProps) {
               />
             ))
           ) : (
-            <Empty description="You are no friend requests" />
+            <Empty description="You have no friend requests" />
           )}
         </div>
         {Boolean(requestsMade?.length) && (

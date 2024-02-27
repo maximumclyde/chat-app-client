@@ -1,5 +1,4 @@
 import { useEffect, useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { message } from "antd";
 import axios from "axios";
 
@@ -7,8 +6,9 @@ import socket from "@socket";
 import { MessageInput } from "..";
 import { MessageBubble } from "@ui-components";
 import { userMessageActions } from "@store-actions";
+import { useAppSelector, useAppDispatch } from "@hooks";
+import { FriendType, GroupType, MessageType } from "@types";
 import { messageSocketHandler as socketHandler } from "@utils";
-import { FriendType, GlobalStoreType, GroupType, MessageType } from "@types";
 
 import "./MessageSection.scss";
 
@@ -19,15 +19,10 @@ type MessageSectionProps = {
 };
 
 function MessageSection(props: MessageSectionProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
+  const userMessages = useAppSelector((state) => state.userMessages);
+  const { preferences } = useAppSelector((state) => state.preferences);
 
-  const userMessages = useSelector(
-    (state: GlobalStoreType) => state.userMessages
-  );
-
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { viewObject, requestPrevMessages, onNewMessage } = props;
 

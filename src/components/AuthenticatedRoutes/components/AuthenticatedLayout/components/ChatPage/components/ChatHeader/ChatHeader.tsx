@@ -1,11 +1,11 @@
 import { useState, Fragment } from "react";
-import { useSelector } from "react-redux";
 import { Card, Avatar } from "antd";
 
-import { GroupCard, ProfileCard } from "./components";
+import { useAppSelector } from "@hooks";
 import { InfoModal } from "@ui-components";
+import { FriendType, GroupType } from "@types";
 import { blockUser, removeFriend } from "@utils";
-import { FriendType, GroupType, GlobalStoreType } from "@types";
+import { GroupCard, ProfileCard } from "./components";
 
 import "./ChatHeader.scss";
 
@@ -16,9 +16,7 @@ type ChatHeaderProps = {
 const { Meta } = Card;
 
 function ChatHeader(props: ChatHeaderProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
 
   const [confirmAction, setConfirmAction] = useState<string>("");
   const [profileCardOpen, setProfileCardOpen] = useState<boolean>(false);

@@ -1,12 +1,12 @@
 import { useState, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import { Input, Empty, message, InputRef } from "antd";
 
 import { UserPreview } from "..";
+import { GroupType } from "@types";
+import { useAppSelector, useAppDispatch } from "@hooks";
 import { InfoModal, StyledButton } from "@ui-components";
 import { groupListActions, userActions } from "@store-actions";
-import { GroupType, GlobalStoreType } from "@types";
 
 import "./NewGroupModal.scss";
 
@@ -16,13 +16,11 @@ type NewGroupModalProps = {
 };
 
 function NewGroupModal(props: NewGroupModalProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
+  const friendList = useAppSelector((state) => state.friendList);
+  const { preferences } = useAppSelector((state) => state.preferences);
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const nameRef = useRef<InputRef>(null);
 
   const { open, onCancel } = props;

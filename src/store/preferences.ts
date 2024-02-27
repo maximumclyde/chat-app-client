@@ -5,12 +5,11 @@ export type PreferenceStateType = {
   preferences: any;
 };
 
+const initialState = { userId: "", preferences: {} } as PreferenceStateType;
+
 const preferences = createSlice({
   name: "preferences",
-  initialState: {
-    userId: "",
-    preferences: {},
-  },
+  initialState,
   reducers: {
     preferencesSetup(_, action: PayloadAction<PreferenceStateType>) {
       return action.payload;

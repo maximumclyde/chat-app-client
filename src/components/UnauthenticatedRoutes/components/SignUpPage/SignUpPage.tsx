@@ -25,71 +25,85 @@ function SignUpPage() {
   const [form] = Form.useForm();
 
   function onUserSignUp() {
-    void message.loading({
-      content: "Loading...",
-      key: "userSignUp",
-    });
-
-    const fields = form.getFieldsValue();
-    delete fields["verifyPassword"];
-
-    axios
-      .post<SignUpType>("/users", {
-        ...fields,
-      })
-      .then(async (res) => {
-        localStorage.setItem("authenticationToken", res.data.token);
-
-        return await message.success({
-          content: "Sign Up Successful!",
-          key: "userSignUp",
-          duration: 2,
-        });
-      })
+    form
+      .validateFields()
       .then(() => {
-        location.replace(`${location.protocol}//${location.host}/`);
+        void message.loading({
+          content: "Loading...",
+          key: "userSignUp",
+        });
+
+        const fields = form.getFieldsValue();
+        delete fields["verifyPassword"];
+
+        axios
+          .post<SignUpType>("/users", {
+            ...fields,
+          })
+          .then(async (res) => {
+            localStorage.setItem("authenticationToken", res.data.token);
+
+            return await message.success({
+              content: "Sign Up Successful!",
+              key: "userSignUp",
+              duration: 2,
+            });
+          })
+          .then(() => {
+            location.replace(`${location.protocol}//${location.host}/`);
+          })
+          .catch((err: any) => {
+            console.log("Error creating user: ", err);
+            const errorFields = { email: [""], userAlias: [""] };
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            if (err?.response?.data?.keyPattern?.userEmail) {
+              void message.warning({
+                content: "Email already in use!",
+                key: "userSignUp",
+              });
+              errorFields.email = [
+                ...responseErrors.email,
+                form.getFieldValue("userEmail"),
+              ];
+              errorFields.userAlias = [...responseErrors.userAlias];
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+            } else if (err?.response?.data?.keyPattern?.userName) {
+              void message.warning({
+                content: "User name is already in use!",
+                key: "userSignUp",
+              });
+              errorFields.userAlias = [
+                ...responseErrors.userAlias,
+                form.getFieldValue("userName"),
+              ];
+              errorFields.email = [...responseErrors.email];
+            } else {
+              void message.error({
+                content: "Could not sign up!",
+                key: "userSignUp",
+              });
+            }
+            setResponseErrors(errorFields);
+          });
       })
-      .catch((err: any) => {
-        console.log("Error creating user: ", err);
-        const errorFields = { email: [""], userAlias: [""] };
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        if (err?.response?.data?.keyPattern?.userEmail) {
-          void message.warning({
-            content: "Email already in use!",
-            key: "userSignUp",
-          });
-          errorFields.email = [
-            ...responseErrors.email,
-            form.getFieldValue("userEmail"),
-          ];
-          errorFields.userAlias = [...responseErrors.userAlias];
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        } else if (err?.response?.data?.keyPattern?.userName) {
-          void message.warning({
-            content: "User name is already in use!",
-            key: "userSignUp",
-          });
-          errorFields.userAlias = [
-            ...responseErrors.userAlias,
-            form.getFieldValue("userName"),
-          ];
-          errorFields.email = [...responseErrors.email];
-        } else {
-          void message.error({
-            content: "Could not sign up!",
-            key: "userSignUp",
-          });
-        }
-        setResponseErrors(errorFields);
-      });
+      .catch(() => {});
   }
 
   return (
-    <Form form={form}>
-      <FormFields fields={signUpFields({ form, responseErrors })} />
+    <Form
+      form={form}
+      onKeyDown={({ key }) => {
+        if (key === "Enter") {
+          onUserSignUp();
+        }
+      }}
+    >
+      <FormFields
+        fields={signUpFields({ form, responseErrors })}
+      />
       <Button
         onClick={() => {
-          void form.validateFields().then(() => onUserSignUp());
+          onUserSignUp();
         }}
       >
         Sign Up

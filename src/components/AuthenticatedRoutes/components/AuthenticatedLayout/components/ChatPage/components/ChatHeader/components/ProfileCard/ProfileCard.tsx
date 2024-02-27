@@ -1,12 +1,12 @@
 import { useState, Fragment, useMemo } from "react";
-import { useSelector } from "react-redux";
-import { Card, Avatar, Divider, Dropdown, Empty } from "antd";
 import dayjs from "dayjs";
+import { Card, Avatar, Divider, Dropdown, Empty } from "antd";
 import { MoreOutlined } from "@ant-design/icons";
 
-import { InfoModal, PreviewModal } from "@ui-components";
-import { GlobalStoreType, FriendType, GroupType } from "@types";
+import { useAppSelector } from "@hooks";
+import { FriendType, GroupType } from "@types";
 import { removeFriend, blockUser } from "@utils";
+import { InfoModal, PreviewModal } from "@ui-components";
 
 import "./ProfileCard.scss";
 
@@ -21,10 +21,8 @@ type ProfileCardProps = {
 type KeyOptionType = "UNFRIEND" | "BLOCK";
 
 function ProfileCard(props: ProfileCardProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
-  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
+  const { preferences } = useAppSelector((state) => state.preferences);
+  const friendList = useAppSelector((state) => state.friendList);
 
   const [preview, setPreview] = useState<string>("");
   const [warning, setWarning] = useState<KeyOptionType>();
@@ -55,13 +53,13 @@ function ProfileCard(props: ProfileCardProps) {
     if (option === "UNFRIEND") {
       try {
         await removeFriend(viewObject?._id);
-        onCancel()
+        onCancel();
         // eslint-disable-next-line no-empty
       } catch {}
     } else {
       try {
         await blockUser(viewObject?._id, viewObject?.userName);
-        onCancel()
+        onCancel();
         // eslint-disable-next-line no-empty
       } catch {}
     }

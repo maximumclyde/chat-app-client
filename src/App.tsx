@@ -1,17 +1,16 @@
 import { useState, useEffect, lazy } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
 
 import socket from "@socket";
-import { getAuthenticatedUser } from "@utils";
-import {
-  preferenceActions,
-  userActions,
-  friendListActions,
-  groupListActions,
-} from "@store-actions";
 import { Loading } from "@ui-components";
-import { GlobalStoreType } from "@types";
+import { getAuthenticatedUser } from "@utils";
+import { useAppSelector, useAppDispatch } from "@hooks";
+import {
+  userActions,
+  groupListActions,
+  preferenceActions,
+  friendListActions,
+} from "@store-actions";
 
 const AuthenticatedRoutes = lazy(
   () => import("./components/AuthenticatedRoutes/AuthenticatedRoutes")
@@ -27,13 +26,11 @@ const providers = {
 };
 
 function App() {
-  const authenticatedUser = useSelector(
-    (state: GlobalStoreType) => state.authenticatedUser
-  );
+  const authenticatedUser = useAppSelector((state) => state.authenticatedUser);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     let call = true;

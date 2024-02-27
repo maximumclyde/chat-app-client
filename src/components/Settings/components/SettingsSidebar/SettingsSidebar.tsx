@@ -1,18 +1,15 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
 import { Layout, Menu } from "antd";
 
+import { useAppSelector } from "@hooks";
 import { settingsItems } from "../../utils";
-import { GlobalStoreType } from "@types";
 
 type SettingsSidebarProps = {
   onSelect: (key: string) => any;
 };
 
 function SettingsSidebar(props: SettingsSidebarProps) {
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
+  const { preferences } = useAppSelector((state) => state.preferences);
 
   const [collapsed, setCollapsed] = useState(false);
 

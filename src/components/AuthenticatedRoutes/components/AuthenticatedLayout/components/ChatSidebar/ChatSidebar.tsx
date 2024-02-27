@@ -5,10 +5,9 @@ import {
   useCallback,
   useImperativeHandle,
 } from "react";
-import { useSelector } from "react-redux";
 import { Input, Card, Avatar, Badge } from "antd";
 
-import { GlobalStoreType } from "@types";
+import { useAppSelector } from "@hooks";
 
 import "./ChatSidebar.scss";
 
@@ -29,11 +28,9 @@ export type SidebarHandle = {
 const { Meta } = Card;
 
 const ChatSidebar = forwardRef<SidebarHandle, SidebarProps>((props, ref) => {
-  const groupList = useSelector((state: GlobalStoreType) => state.groupList);
-  const friendList = useSelector((state: GlobalStoreType) => state.friendList);
-  const { preferences } = useSelector(
-    (state: GlobalStoreType) => state.preferences
-  );
+  const groupList = useAppSelector((state) => state.groupList);
+  const friendList = useAppSelector((state) => state.friendList);
+  const { preferences } = useAppSelector((state) => state.preferences);
 
   const [searchFilter, setSearchFilter] = useState("");
   const [newMessages, setNewMessages] = useState<NewMessageType>({});
